@@ -47,30 +47,42 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [isLinkingGoogle, setIsLinkingGoogle] = useState(false);
   const [googleSuccessAlert, setGoogleSuccessAlert] = useState<string | null>(null);
 
-  // Integrasi Google Login Nyata
+  // =========================================================================
+  // INTEGRASI GOOGLE LOGIN (PERBAIKAN: BYPASS VERIFIKASI EMAIL/OTP)
+  // BARIS 40 - 66
+  // =========================================================================
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLinkingGoogle(true);
       try {
-        // 1. Mengambil data profil dari Google API
+        // 1. Mengambil profil dari Google API
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const googleUser = await res.json();
 
-        // 2. Update profile DAN set isLoggedIn jadi true
+        // 2. Update profile, tandai email terverifikasi, dan set status login
         onUpdateProfile({
           googleLinked: true,
           googleEmail: googleUser.email,
           email: googleUser.email,
           name: googleUser.name || nameInput,
           avatarUrl: googleUser.picture,
-          isLoggedIn: true // SANGAT PENTING: Penanda user sudah login
+          isEmailVerified: true, // BYPASS SYARAT VERIFIKASI OTP EMAIL
+          isLoggedIn: true,       // PENANDA UTAMA USER TELAH LOGIN
         });
 
-        // 3. Panggil callback selesai auth & tutup modal
-        onCompleteAuth(); 
-        onClose(); 
+        setGoogleSuccessAlert(`Login Google Berhasil: ${googleUser.email}`);
+
+        // 3. Langsung eksekusi alur masuk dashboard tanpa minta OTP
+        setTimeout(() => {
+          if (onProceedToAkun) {
+            onProceedToAkun();
+          } else {
+            onCompleteAuth();
+          }
+          onClose();
+        }, 400);
 
       } catch (err) {
         console.error('Gagal mengambil profil Google:', err);
@@ -80,6 +92,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     },
     onError: (error) => console.error('Google Login Error:', error),
   });
+
   if (!isOpen) return null;
 
   const handleStep1Submit = (e: React.FormEvent) => {
@@ -149,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </h2>
             </div>
 
-            {/* TOMBOL LOGIN GOOGLE NYATA */}
+            {/* TOMBOL LOGIN GOOGLE */}
             <button
               type="button"
               onClick={() => googleLogin()}
