@@ -1,3 +1,4 @@
+import { useGoogleLogin } from '@react-oauth/google';
 import React, { useState, useRef } from 'react';
 import { UserProfile, ActiveTab } from '../../types';
 import { ThreeInteractiveBackground } from '../common/ThreeInteractiveBackground';
@@ -106,83 +107,38 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }, 3200);
   };
 
-  // Helper untuk membaca data pengguna dari token Google resmi
-  const decodeGoogleJwt = (token: string) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch {
-      return null;
-    }
-  };
-
-  // PERBAIKAN GOOGLE SSO: Langsung Login tanpa masuk ke Layar OTP
-  const proceedGoogleToVerification = (googleData?: { name?: string; email?: string; picture?: string }) => {
-    const chosenEmail = googleData?.email || emailInput || 'arman30@guru.sd.belajar.id';
-    const chosenName = googleData?.name || userProfile.name || 'Arman Pratama';
-    const chosenAvatar = googleData?.picture || userProfile.avatarUrl;
-
-    // Simpan data profil & langsung izinkan masuk (isLoggedIn: true)
-    setEmailInput(chosenEmail);
-    onUpdateProfile({
-      name: chosenName,
-      email: chosenEmail,
-      avatarUrl: chosenAvatar,
-      googleLinked: true,
-      googleEmail: chosenEmail,
-      isEmailVerified: true, // BYPASS VERIFIKASI EMAIL
-      isLoggedIn: true,       // MASUK KEDALAM APLIKASI
-    });
-
-    showToast(`🎉 Login Google Berhasil: ${chosenEmail}`);
-
-    // Langsung panggil handler login ke dashboard
-    setTimeout(() => {
-      onLogin('akun');
-    }, 400);
-  };
-
-  // 2. LOGIN DENGAN GOOGLE (SSO Google -> Langsung Masuk Ke Dashboard)
-  const handleGoogleLogin = () => {
-    const googleClientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
-
-    // Jika VITE_GOOGLE_CLIENT_ID terpasang di Vercel dan SDK Google siap
-    if (googleClientId && (window as any).google?.accounts?.id) {
+  // 2. INTEGRASI GOOGLE SSO LANGSUNG (@react-oauth/google) - BYPASS OTP
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
       try {
-        (window as any).google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: (response: any) => {
-            if (response.credential) {
-              const payload = decodeGoogleJwt(response.credential);
-              if (payload) {
-                proceedGoogleToVerification({
-                  name: payload.name,
-                  email: payload.email,
-                  picture: payload.picture,
-                });
-                return;
-              }
-            }
-            proceedGoogleToVerification();
-          },
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
-        (window as any).google.accounts.id.prompt();
-        return;
-      } catch (err) {
-        console.warn('Google prompt fallback:', err);
-      }
-    }
+        const googleUser = await res.json();
 
-    // Fallback langsung masuk jika Google Client ID berjalan
-    proceedGoogleToVerification();
-  };
+        // Simpan data profil & langsung set isLoggedIn true (Bypass verifikasi OTP)
+        onUpdateProfile({
+          name: googleUser.name || userProfile.name,
+          email: googleUser.email,
+          avatarUrl: googleUser.picture,
+          googleLinked: true,
+          googleEmail: googleUser.email,
+          isEmailVerified: true,
+          isLoggedIn: true,
+        });
+
+        showToast(`🎉 Login Google Berhasil: ${googleUser.email}`);
+
+        // Arahkan langsung masuk ke aplikasi / dashboard
+        setTimeout(() => {
+          onLogin('akun');
+        }, 400);
+      } catch (err) {
+        console.error('Gagal mengambil profil Google:', err);
+      }
+    },
+    onError: (error) => console.error('Google Login Error:', error),
+  });
 
   // 3. KARTU KEDUA: Verifikasi Akun Email Selesai -> Masuk ke Akun
   const handleVerifyOtpSubmit = (e?: React.FormEvent) => {
@@ -421,9 +377,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </div>
 
                 <div>
+                  {/* TOMBOL GOOGLE LOGIN DIPERBARUI KE googleLogin() */}
                   <button
                     type="button"
-                    onClick={handleGoogleLogin}
+                    onClick={() => googleLogin()}
                     className="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800/90 border border-slate-700 hover:border-slate-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-3 transition-colors shadow-sm"
                   >
                     <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
