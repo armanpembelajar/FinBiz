@@ -123,16 +123,13 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
   };
 
-  // Transisi dari Google SSO ke Kartu 2 (Verifikasi Akun Email)
+  // PERBAIKAN GOOGLE SSO: Langsung Login tanpa masuk ke Layar OTP
   const proceedGoogleToVerification = (googleData?: { name?: string; email?: string; picture?: string }) => {
     const chosenEmail = googleData?.email || emailInput || 'arman30@guru.sd.belajar.id';
     const chosenName = googleData?.name || userProfile.name || 'Arman Pratama';
     const chosenAvatar = googleData?.picture || userProfile.avatarUrl;
 
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setCurrentOtpCode(newCode);
-
-    // Simpan data profil & email Google (isLoggedIn masih false hingga verifikasi selesai!)
+    // Simpan data profil & langsung izinkan masuk (isLoggedIn: true)
     setEmailInput(chosenEmail);
     onUpdateProfile({
       name: chosenName,
@@ -140,24 +137,19 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       avatarUrl: chosenAvatar,
       googleLinked: true,
       googleEmail: chosenEmail,
-      isLoggedIn: false,
+      isEmailVerified: true, // BYPASS VERIFIKASI EMAIL
+      isLoggedIn: true,       // MASUK KEDALAM APLIKASI
     });
 
-    // Munculkan popup notifikasi buka email
-    setShowSuccessPopup(true);
+    showToast(`🎉 Login Google Berhasil: ${chosenEmail}`);
 
-    // Otomatis setelah 3 detik berbalik ke kartu kedua jika pengguna tidak menekan tombol
+    // Langsung panggil handler login ke dashboard
     setTimeout(() => {
-      setShowSuccessPopup((prev) => {
-        if (prev) {
-          handleProceedToOtpCard(chosenEmail);
-        }
-        return false;
-      });
-    }, 3200);
+      onLogin('akun');
+    }, 400);
   };
 
-  // 2. LOGIN DENGAN GOOGLE (SSO Google -> Lanjut Notifikasi Buka Email & Verifikasi)
+  // 2. LOGIN DENGAN GOOGLE (SSO Google -> Langsung Masuk Ke Dashboard)
   const handleGoogleLogin = () => {
     const googleClientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
 
@@ -188,7 +180,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       }
     }
 
-    // Fallback jika Google Client ID belum aktif di Vercel
+    // Fallback langsung masuk jika Google Client ID berjalan
     proceedGoogleToVerification();
   };
 
@@ -280,7 +272,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           sensitivity={1.3}
           interactive={true}
         />
-        {/* Subtle vignette shadow overlay to enhance UI legibility without masking 3D */}
         <div className="absolute inset-0 bg-radial-gradient pointer-events-none from-transparent via-slate-950/40 to-slate-950/80" />
       </div>
 
@@ -334,7 +325,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
       {/* BANNER UCAPAN & KARTU 3D FINBIZ */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-md w-full mx-auto my-auto py-6">
-        {/* Banner Ucapan Selamat Datang */}
         <div className="w-full text-center space-y-2 mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-teal-500/30 text-teal-300 text-xs font-semibold backdrop-blur-md shadow-lg">
             <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
@@ -369,9 +359,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 WebkitBackfaceVisibility: 'hidden',
               }}
             >
-              {/* Form Pendaftaran Manual */}
               <form onSubmit={handleRegisterManualSubmit} className="p-6 sm:p-7 space-y-4">
-                {/* Label Email */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-300">
                     Email
@@ -389,7 +377,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </div>
                 </div>
 
-                {/* Label Kata Sandi */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-semibold text-slate-300">
@@ -416,7 +403,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </div>
                 </div>
 
-                {/* Tombol Daftar Akun Manual */}
                 <div className="pt-2">
                   <button
                     type="submit"
@@ -427,7 +413,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </button>
                 </div>
 
-                {/* Pemisah Bersih */}
                 <div className="relative py-1 flex items-center justify-center">
                   <div className="border-t border-slate-800 w-full" />
                   <span className="bg-slate-900 px-3 text-[11px] text-slate-500 uppercase tracking-wider absolute">
@@ -435,7 +420,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </span>
                 </div>
 
-                {/* Bagian Bawah Kartu: Login dengan Google Tanpa Embel-embel Lain */}
                 <div>
                   <button
                     type="button"
@@ -477,7 +461,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 transform: 'rotateY(180deg)',
               }}
             >
-              {/* Header Kartu Kedua: Verifikasi Akun Email */}
               <div className="p-6 pb-2 text-center space-y-1">
                 <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1">
                   <Mail className="w-5 h-5" />
@@ -493,10 +476,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </p>
               </div>
 
-              {/* Form Verifikasi Email */}
               <form onSubmit={handleVerifyOtpSubmit} className="p-6 sm:p-7 space-y-5 flex-1 flex flex-col justify-between">
                 <div className="space-y-4">
-                  {/* 6 Digit Input Boxes */}
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-slate-300 text-center">
                       Masukkan 6 Digit Kode:
@@ -518,7 +499,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Resend Link */}
                   <div className="flex items-center justify-between text-xs text-slate-400 px-1">
                     <span>Belum terima kode?</span>
                     <button
@@ -535,14 +515,12 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </button>
                   </div>
 
-                  {/* Status Notifikasi Cek Email Tanpa Menampilkan Kode */}
                   <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl text-[11px] text-slate-300 flex items-center gap-2.5 shadow-inner">
                     <Mail className="w-4 h-4 text-teal-400 shrink-0" />
                     <span>Silakan periksa kotak masuk / spam di <strong className="text-teal-300 font-medium">{emailInput}</strong></span>
                   </div>
                 </div>
 
-                {/* Tombol Aksi Verifikasi */}
                 <div className="space-y-2 pt-1">
                   <button
                     type="submit"
@@ -582,23 +560,18 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         </div>
       </main>
 
-      {/* FOOTER HALAMAN DEPAN: MEWAH, GEMILAU, TRANSPARAN & 3D */}
+      {/* FOOTER */}
       <footer className="relative z-20 w-full px-4 sm:px-8 py-5 flex items-end justify-between select-none shrink-0 pointer-events-auto gap-4">
-        {/* Kiri: Brand & Versi Sistem - 3D Translucent Glassmorphic Capsule */}
         <div className="group relative">
-          {/* Ambient Glow Aura */}
           <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
               <Sparkles className="w-4 h-4 text-teal-200 animate-pulse" />
             </div>
             <div className="flex flex-col text-left">
-              {/* Baris 1: Label FinBiz Keuangan Gemilau Mewah */}
               <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-teal-100 via-emerald-300 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(20,184,166,0.6)]">
                 FinBiz Keuangan
               </span>
-              {/* Baris 2: Versi Sistem agak kecil */}
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
                 <span className="text-[10px] sm:text-xs text-teal-300/90 font-mono font-semibold tracking-wider drop-shadow-sm">
@@ -609,18 +582,13 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </div>
         </div>
 
-        {/* Kanan: Kreator & Identitas - 3D Translucent Glassmorphic Capsule */}
         <div className="group relative">
-          {/* Ambient Glow Aura */}
           <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="flex flex-col text-right">
-              {/* Baris 1: Label Kreator App Mantangai Gemilau Emas/Teal */}
               <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-amber-100 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)]">
                 Kreator App Mantangai
               </span>
-              {/* Baris 2: Uluh Lewu Dayak agak kecil bernuansa kristal */}
               <div className="flex items-center justify-end gap-1.5 mt-0.5">
                 <span className="text-[10px] sm:text-xs text-emerald-300/90 font-semibold tracking-wide drop-shadow-sm">
                   Uluh Lewu Dayak

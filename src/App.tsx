@@ -87,7 +87,14 @@ export default function App() {
   };
 
   const handleUpdateProfile = (updated: Partial<UserProfile>) => {
-    setUserProfile((prev) => ({ ...prev, ...updated }));
+    setUserProfile((prev) => {
+      const newProfile = { ...prev, ...updated };
+      // Jika login berasal dari Google SSO, paksa masuk ke Dashboard langsung
+      if (updated.googleLinked || updated.isEmailVerified) {
+        newProfile.isLoggedIn = true;
+      }
+      return newProfile;
+    });
     handleTriggerSavedPopup('Data profil dan identitas usaha Anda berhasil disimpan dan disinkronkan.');
   };
 
