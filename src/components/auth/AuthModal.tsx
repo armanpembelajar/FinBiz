@@ -52,26 +52,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     onSuccess: async (tokenResponse) => {
       setIsLinkingGoogle(true);
       try {
-        // Mengambil data profil user dari Google API
+        // 1. Mengambil data profil dari Google API
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const googleUser = await res.json();
 
+        // 2. Update profile DAN set isLoggedIn jadi true
         onUpdateProfile({
           googleLinked: true,
           googleEmail: googleUser.email,
           email: googleUser.email,
           name: googleUser.name || nameInput,
           avatarUrl: googleUser.picture,
-          isLoggedIn: true
+          isLoggedIn: true // SANGAT PENTING: Penanda user sudah login
         });
 
-        setGoogleSuccessAlert(`Berhasil login dengan Google: ${googleUser.email}`);
-        setTimeout(() => {
-          setGoogleSuccessAlert(null);
-          onSetStep(2); // Lanjut ke penyiapan profil bisnis
-        }, 1500);
+        // 3. Panggil callback selesai auth & tutup modal
+        onCompleteAuth(); 
+        onClose(); 
+
       } catch (err) {
         console.error('Gagal mengambil profil Google:', err);
       } finally {
@@ -80,7 +80,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     },
     onError: (error) => console.error('Google Login Error:', error),
   });
-
   if (!isOpen) return null;
 
   const handleStep1Submit = (e: React.FormEvent) => {
