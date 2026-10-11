@@ -2,6 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import React, { useState, useRef } from 'react';
 import { UserProfile, ActiveTab } from '../../types';
 import { ThreeInteractiveBackground } from '../common/ThreeInteractiveBackground';
+import { supabase } from '../../lib/supabase';
 import { 
   Mail, 
   Lock, 
@@ -36,7 +37,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   // Kartu 2: Input OTP Verifikasi Email
-  const [currentOtpCode, setCurrentOtpCode] = useState<string>('824915');
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [resendCountdown, setResendCountdown] = useState<number>(45);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
@@ -74,8 +74,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }, 400);
   };
 
-  // 1. DAFTAR MANUAL KARTU PERTAMA: Berhasil -> Tampil Notifikasi Buka Email -> Berbalik ke Kartu Kedua
-  const handleRegisterManualSubmit = (e: React.FormEvent) => {
+  // 1. DAFTAR MANUAL KARTU PERTAMA: Mengirimkan Kode OTP Asli via Supabase
+  const handleRegisterManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim()) {
       showToast('⚠️ Silakan masukkan Email Anda');
@@ -86,17 +86,27 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       return;
     }
 
+    showToast('⏳ Mengirimkan kode OTP ke email...');
+
+    // Panggil Supabase Auth untuk mengirim OTP email asli
+    const { error } = await supabase.auth.signInWithOtp({
+      email: emailInput.trim(),
+    });
+
+    if (error) {
+      console.error('Error Supabase OTP:', error.message);
+      showToast(`❌ Gagal mengirim OTP: ${error.message}`);
+      return;
+    }
+
     onUpdateProfile({
       email: emailInput.trim(),
     });
 
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setCurrentOtpCode(newCode);
-
-    // Munculkan popup notifikasi buka email
+    // Munculkan popup notifikasi cek email
     setShowSuccessPopup(true);
 
-    // Otomatis setelah 3 detik berbalik ke kartu kedua jika pengguna tidak menekan tombol
+    // Otomatis berbalik ke kartu OTP setelah 3 detik
     setTimeout(() => {
       setShowSuccessPopup((prev) => {
         if (prev) {
@@ -140,8 +150,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     onError: (error) => console.error('Google Login Error:', error),
   });
 
-  // 3. KARTU KEDUA: Verifikasi Akun Email Selesai -> Masuk ke Akun
-  const handleVerifyOtpSubmit = (e?: React.FormEvent) => {
+  // 3. KARTU KEDUA: Memverifikasi Kode OTP Asli dengan Supabase Auth
+  const handleVerifyOtpSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const fullCode = otpDigits.join('');
     if (fullCode.length < 6) {
@@ -150,19 +160,32 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
 
     setIsVerifyingOtp(true);
-    setTimeout(() => {
-      setIsVerifyingOtp(false);
-      setIsOtpSuccess(true);
-      showToast('🎉 Verifikasi akun berhasil! Membuka FinBiz...');
 
-      setTimeout(() => {
-        onUpdateProfile({
-          isLoggedIn: true,
-          email: emailInput,
-        });
-        onLogin('akun');
-      }, 700);
-    }, 500);
+    // Verifikasi Token OTP dengan Supabase Auth
+    const { error } = await supabase.auth.verifyOtp({
+      email: emailInput,
+      token: fullCode,
+      type: 'email',
+    });
+
+    setIsVerifyingOtp(false);
+
+    if (error) {
+      showToast(`❌ Kode OTP salah atau sudah kedaluwarsa!`);
+      return;
+    }
+
+    setIsOtpSuccess(true);
+    showToast('🎉 Verifikasi email berhasil! Membuka FinBiz...');
+
+    setTimeout(() => {
+      onUpdateProfile({
+        isLoggedIn: true,
+        isEmailVerified: true,
+        email: emailInput,
+      });
+      onLogin('akun');
+    }, 700);
   };
 
   // Kembali ke Kartu Pertama (Berbalik ke Depan)
@@ -175,14 +198,23 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }, 350);
   };
 
-  // Kirim Ulang Kode Verifikasi
-  const handleResendOtp = () => {
+  // Kirim Ulang Kode Verifikasi OTP Asli via Supabase
+  const handleResendOtp = async () => {
     if (resendCountdown > 0) return;
-    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    setCurrentOtpCode(newCode);
-    setResendCountdown(45);
-    setOtpDigits(['', '', '', '', '', '']);
-    showToast(`📩 Kode OTP baru (${newCode}) telah dikirim ke ${emailInput}`);
+
+    showToast('📩 Mengirim ulang kode OTP...');
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: emailInput,
+    });
+
+    if (!error) {
+      setResendCountdown(45);
+      setOtpDigits(['', '', '', '', '', '']);
+      showToast(`📩 Kode OTP baru telah dikirim ke ${emailInput}`);
+    } else {
+      showToast(`❌ Gagal kirim ulang: ${error.message}`);
+    }
   };
 
   // Helper Perubahan Digit OTP
@@ -377,7 +409,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </div>
 
                 <div>
-                  {/* TOMBOL GOOGLE LOGIN DIPERBARUI KE googleLogin() */}
                   <button
                     type="button"
                     onClick={() => googleLogin()}
