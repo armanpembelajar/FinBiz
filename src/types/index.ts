@@ -1,18 +1,20 @@
+import { ClipboardType } from "lucide-react";
+
 export type ActiveTab = 'dashboard' | 'perencanaan' | 'pelaksanaan' | 'pelaporan' | 'pengaturan' | 'akun';
 
 export interface UserProfile {
   name: string;
-  businessName: string;
-  businessType: string;
-  currency: string;
   email: string;
-  isLoggedIn: boolean;
-  googleLinked: boolean;
-  googleEmail?: string;
   avatarUrl?: string;
+  googleLinked?: boolean;
+  googleEmail?: string;
+  isLoggedIn?: boolean;
+  isEmailVerified?: boolean; // <-- Wajib ada agar TypeScript tidak error
+  // properti lainnya...
+}
 
   // Identitas Lengkap Pengguna
-  birthPlace?: string;        // Tempat Lahir
+  Cit: string;        // Tempat Lahir
   birthDate?: string;         // Tanggal Lahir (YYYY-MM-DD)
   gender?: 'Laki-laki' | 'Perempuan' | ''; // Jenis Kelamin
   address?: string;           // Alamat Lengkap
