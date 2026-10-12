@@ -13,6 +13,7 @@ import { PelaksanaanView } from './components/views/PelaksanaanView';
 import { PelaporanView } from './components/views/PelaporanView';
 import { PengaturanView } from './components/views/PengaturanView';
 import { AkunView } from './components/views/AkunView';
+import { MasterDataView } from './components/views/MasterDataView';
 import { AuthModal } from './components/auth/AuthModal';
 import { Landing3DView } from './components/auth/Landing3DView';
 import { TransactionModal } from './components/modals/TransactionModal';
@@ -25,7 +26,8 @@ import {
   LayoutDashboard, 
   ReceiptText, 
   CalendarClock, 
-  UserCheck 
+  UserCheck,
+  FolderLock
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -78,6 +80,8 @@ export default function App() {
     } else if (activeTab === 'pelaksanaan' && !featureControls.enablePelaksanaan) {
       setActiveTab('dashboard');
     } else if (activeTab === 'pelaporan' && !featureControls.enablePelaporan) {
+      setActiveTab('dashboard');
+    } else if (activeTab === 'masterdata' && !featureControls.enableMasterData) {
       setActiveTab('dashboard');
     }
   }, [activeTab, featureControls]);
@@ -388,6 +392,18 @@ export default function App() {
               transactions={transactions}
               selectedPeriod={selectedPeriod}
               featureControls={featureControls}
+              onUpdateProfile={handleUpdateProfile}
+            />
+          )}
+
+          {activeTab === 'masterdata' && (
+            <MasterDataView
+              userProfile={userProfile}
+              featureControls={featureControls}
+              transactions={transactions}
+              budgetItems={budgetItems}
+              onUpdateProfile={handleUpdateProfile}
+              onOpenAuthModal={handleOpenAuthModal}
             />
           )}
 

@@ -152,6 +152,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
       enablePerencanaan: true,
       enablePelaksanaan: true,
       enablePelaporan: true,
+      enableMasterData: true,
       showCashflowChart: true,
       showBudgetAbsorption: true,
       showUpcomingDueDates: true,
@@ -168,7 +169,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
       enableGoogleIntegration: true,
       autoShowAuthModalOnStart: true,
     });
-    showNotification('💎 Seluruh 16 kapabilitas FinBiz Enterprise telah diaktifkan secara maksimal.');
+    showNotification('💎 Seluruh kapabilitas FinBiz Enterprise telah diaktifkan secara maksimal.');
   };
 
   const handleEssentialMode = () => {
@@ -176,6 +177,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
       enablePerencanaan: false,
       enablePelaksanaan: true,
       enablePelaporan: true,
+      enableMasterData: true,
       showCashflowChart: true,
       showBudgetAbsorption: false,
       showUpcomingDueDates: true,
@@ -200,6 +202,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
       enablePerencanaan: true,
       enablePelaksanaan: true,
       enablePelaporan: true,
+      enableMasterData: true,
       showCashflowChart: true,
       showBudgetAbsorption: true,
       showUpcomingDueDates: true,
@@ -224,6 +227,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
       enablePerencanaan: true,
       enablePelaksanaan: true,
       enablePelaporan: true,
+      enableMasterData: true,
       showCashflowChart: true,
       showBudgetAbsorption: true,
       showUpcomingDueDates: true,
@@ -248,6 +252,7 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
     featureControls.enablePerencanaan,
     featureControls.enablePelaksanaan,
     featureControls.enablePelaporan,
+    featureControls.enableMasterData,
     featureControls.showCashflowChart,
     featureControls.showBudgetAbsorption,
     featureControls.showUpcomingDueDates,
@@ -305,6 +310,17 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
           riskLevel: 'Kritis',
           impact: 'Membuka tab navigasi Pelaporan di sidebar',
           onToggle: () => onUpdateFeatureControls({ enablePelaporan: !featureControls.enablePelaporan }),
+        },
+        {
+          id: 'enableMasterData',
+          code: 'FIT-04',
+          label: 'Master Data Vault & Proteksi Ekspor Google SSO',
+          description: 'Folder master Admin, Pengguna, Laporan, Audit, Backup/Restore, dan Urgen dengan proteksi ekspor wajib Google SSO.',
+          enabled: featureControls.enableMasterData,
+          badge: 'Vault SSO',
+          riskLevel: 'Kritis',
+          impact: 'Membuka tab navigasi Master Data di sidebar',
+          onToggle: () => onUpdateFeatureControls({ enableMasterData: !featureControls.enableMasterData }),
         },
       ],
     },
@@ -895,11 +911,12 @@ export const PengaturanView: React.FC<PengaturanViewProps> = ({
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
                     {[
                       { key: 'enablePerencanaan', label: 'Perencanaan (RAB)', active: featureControls.enablePerencanaan },
                       { key: 'enablePelaksanaan', label: 'Pelaksanaan (Kas)', active: featureControls.enablePelaksanaan },
                       { key: 'enablePelaporan', label: 'Pelaporan (P&L)', active: featureControls.enablePelaporan },
+                      { key: 'enableMasterData', label: 'Master Data (Vault)', active: featureControls.enableMasterData },
                     ].map((m) => (
                       <div
                         key={m.key}

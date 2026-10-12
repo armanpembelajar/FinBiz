@@ -1,7 +1,7 @@
 # Ringkasan Proyek Utuh: FinBiz - Manajemen Keuangan Bisnis & UMKM
 
-> **Versi Sistem:** v3.1.3 Enterprise  
-> **Tanggal Pembaruan Terakhir:** Senin, 12 Oktober 2026 (Pukul 11:05 PDT / 01:05 WIB)  
+> **Versi Sistem:** v3.2.0 Enterprise  
+> **Tanggal Pembaruan Terakhir:** Senin, 12 Oktober 2026 (Pukul 11:50 PDT / 01:50 WIB)  
 > **Status Sistem:** Live Development & Ready for Production  
 > **Lingkungan Server:** Node.js 22 · Vite 8 (Port 3000 / Host 0.0.0.0) · React 19 · TypeScript  
 > **Lisensi:** Apache-2.0  
@@ -36,18 +36,25 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 | 20 | **Pelaporan (Fiskal)** | Pelaporan | **Kartu Laporan Laba Rugi Komprehensif** | Rekapitulasi pendapatan kotor, HPP, beban usaha, dan laba operasional | `-` |
 | 21 | **Pelaporan (Fiskal)** | Pelaporan | **Kartu Laporan Posisi Keuangan (Neraca)** | Penyajian aset lancar, liabilitas jangka pendek, dan ekuitas modal | `-` |
 | 22 | **Pelaporan (Fiskal)** | Pelaporan | **Kartu Kepatuhan Pajak PPh Final UMKM** | Perhitungan otomatis PPh Final 0.5% berdasarkan PP 55/2022 | `-` |
-| 23 | **Pengaturan Sistem** | Pengaturan | **Kartu Master Saklar Fitur** | Kontrol fleksibel on/off modul Perencanaan, Pelaksanaan, Pelaporan | `-` |
-| 24 | **Pengaturan Sistem** | Pengaturan | **Kartu Kelola Kas & Rekening Bank** | Konfigurasi rekening bank usaha, dompet digital, dan kas kasir | `-` |
-| 25 | **Pengaturan Sistem** | Pengaturan | **Kartu Pengaturan Notifikasi & Fiskal** | Pengaturan batas ambang kas minimum dan periode tutup buku | `-` |
-| 26 | **Pengaturan Sistem** | Pengaturan | **Kartu Sinkronisasi Akun Google** | Status tautan akun Google cadangan dan email sinkronisasi | `-` |
-| 27 | **Profil Usaha (Akun)** | Akun | **Kartu Identitas Usaha & Pemilik** | Input nama usaha, bidang UMKM, NIK, alamat lengkap, dan kontak | `-` |
-| 28 | **Profil Usaha (Akun)** | Akun | **Kartu Meteran Kelengkapan Profil** | Indikator progres skor kelengkapan identitas profil bisnis (0-100%) | `-` |
-| 29 | **Profil Usaha (Akun)** | Akun | **Kartu Pengaturan Avatar & Logo Usaha** | Upload foto profil resmi dan logo identitas bisnis | `-` |
-| 30 | **Profil Usaha (Akun)** | Akun | **Kartu Keamanan: Autentikator & Sidik Jari** | Saklar aktivasi fleksibel 2FA Autentikator & Sidik Jari, ikon & label sejajar | ✅ **Selesai (12 Okt 2026)** |
-| 31 | **Fondasi Sistem** | Layout & Navigasi | **Arsitektur Responsif Multi-Device (Mobile, Tablet, Desktop)** | Drawer geser mobile, header sticky HP, bottom nav 1-jempol, padding adaptif | ✅ **Selesai (12 Okt 2026)** |
-| 32 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Tersimpan"** | Modal emerald interaktif konfirmasi penyimpanan seluruh modul | `-` |
-| 33 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Keluar"** | Modal konfirmasi logout tunggal, bersih tanpa residu toast footer | `-` |
-| 34 | **Fondasi Sistem** | Lingkungan / Build | **Konfigurasi Server & Linting Bersih** | Migrasi AI Studio Port 3000, eliminasi paket Sentry tak terpakai, zero TS lint error | ✅ **Selesai (12 Okt 2026)** |
+| 23 | **Folder Master Data** | Master Data | **Folder Master Admin** | Konfigurasi super admin, privilege matrix, kredensial hash terenkripsi | ✅ **Selesai (12 Okt 2026)** |
+| 24 | **Folder Master Data** | Master Data | **Folder Master Pengguna** | Direktori karyawan/user, status verifikasi NIK, biometrik, 2FA, divisi | ✅ **Selesai (12 Okt 2026)** |
+| 25 | **Folder Master Data** | Master Data | **Folder Laporan Keuangan** | Master buku besar, laba rugi Q3, neraca, rekap PPh final PP 55/2022 | ✅ **Selesai (12 Okt 2026)** |
+| 26 | **Folder Master Data** | Master Data | **Folder Log / Audit Trail** | Forensik audit trail transaksi, log otentikasi login/logout & rekam jejak ekspor | ✅ **Selesai (12 Okt 2026)** |
+| 27 | **Folder Master Data** | Master Data | **Folder Backup & Restore** | Cadangan database snapshot SQL/JSON, checkpoint restore, arsip ZIP AES-256 | ✅ **Selesai (12 Okt 2026)** |
+| 28 | **Folder Master Data** | Master Data | **Folder Berkas Urgen & Legalitas** | NIB, NPWP badan usaha, perjanjian NDA rahasia, sertifikasi digital PSE | ✅ **Selesai (12 Okt 2026)** |
+| 29 | **Folder Master Data** | Master Data & Pelaporan | **Proteksi Ekspor Wajib Google SSO** | Penegakan wajib otentikasi Google SSO sebelum ekspor berkas CSV, Excel, PDF, JSON, SQL untuk mencegah kebocoran data | ✅ **Selesai (12 Okt 2026)** |
+| 30 | **Pengaturan Sistem** | Pengaturan | **Kartu Master Saklar Fitur** | Kontrol fleksibel on/off modul Perencanaan, Pelaksanaan, Pelaporan, Master Data | ✅ **Selesai (12 Okt 2026)** |
+| 31 | **Pengaturan Sistem** | Pengaturan | **Kartu Kelola Kas & Rekening Bank** | Konfigurasi rekening bank usaha, dompet digital, dan kas kasir | `-` |
+| 32 | **Pengaturan Sistem** | Pengaturan | **Kartu Pengaturan Notifikasi & Fiskal** | Pengaturan batas ambang kas minimum dan periode tutup buku | `-` |
+| 33 | **Pengaturan Sistem** | Pengaturan | **Kartu Sinkronisasi Akun Google** | Status tautan akun Google cadangan dan email sinkronisasi | `-` |
+| 34 | **Profil Usaha (Akun)** | Akun | **Kartu Identitas Usaha & Pemilik** | Input nama usaha, bidang UMKM, NIK, alamat lengkap, dan kontak | `-` |
+| 35 | **Profil Usaha (Akun)** | Akun | **Kartu Meteran Kelengkapan Profil** | Indikator progres skor kelengkapan identitas profil bisnis (0-100%) | `-` |
+| 36 | **Profil Usaha (Akun)** | Akun | **Kartu Pengaturan Avatar & Logo Usaha** | Upload foto profil resmi dan logo identitas bisnis | `-` |
+| 37 | **Profil Usaha (Akun)** | Akun | **Kartu Keamanan: Autentikator & Sidik Jari** | Saklar aktivasi fleksibel 2FA Autentikator & Sidik Jari, ikon & label sejajar | ✅ **Selesai (12 Okt 2026)** |
+| 38 | **Fondasi Sistem** | Layout & Navigasi | **Arsitektur Responsif Multi-Device (Mobile, Tablet, Desktop)** | Drawer geser mobile, header sticky HP, bottom nav 1-jempol, padding adaptif | ✅ **Selesai (12 Okt 2026)** |
+| 39 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Tersimpan"** | Modal emerald interaktif konfirmasi penyimpanan seluruh modul | `-` |
+| 40 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Keluar"** | Modal konfirmasi logout tunggal, bersih tanpa residu toast footer | `-` |
+| 41 | **Fondasi Sistem** | Lingkungan / Build | **Konfigurasi Server & Linting Bersih** | Migrasi AI Studio Port 3000, eliminasi paket Sentry tak terpakai, zero TS lint error | ✅ **Selesai (12 Okt 2026)** |
 
 > *Catatan Pengisian:* Kolom **Status Pembaruan** mencantumkan status ✅ **Selesai (Tanggal)** untuk bagian yang baru diperbarui. Bagian yang belum memiliki pembaruan ditandai dengan strip (`-`) agar fokus kerja tetap terarah dan teratur.
 
@@ -55,7 +62,23 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 
 ## 2. Catatan Log Riwayat Pembaruan Sistem (Changelog)
 
-### Versi v3.1.3 Enterprise — Senin, 12 Oktober 2026
+### Versi v3.2.0 Enterprise — Senin, 12 Oktober 2026
+* **Penambahan Modul Folder Master Data & Repositori Berkas Sensitif**:
+  * **Folder Master Admin**: Berisi konfigurasi administrator, matriks izin peran (*RBAC*), protokol kredensial, dan konfigurasi global sistem dengan proteksi *Super Admin clearance*.
+  * **Folder Master Pengguna**: Direktori induk profil karyawan/pengguna, rekap status verifikasi NIK, kepatuhan biometrik sidik jari, 2FA autentikator, dan daftar akun Google SSO terhubung.
+  * **Folder Laporan Keuangan**: Repositori master buku besar transaksi, laporan laba rugi komprehensif, neraca saldo, rekapitulasi kepatuhan pajak PPh Final UMKM 0.5% (PP 55/2022), dan rekonsiliasi kas bank.
+  * **Folder Log / Audit Trail**: Catatan forensik audit trail transaksi kas, log riwayat otentikasi sesi masuk/login, integritas checksum data, serta rekam jejak ekspor berkas rahasia secara *append-only immutable*.
+  * **Folder Backup & Restore**: Snapshot penuh database SQL/JSON, checkpoint pemulihan sistem (*restore point*), dan berkas arsip terkompresi terenkripsi AES-256 untuk pemulihan bencana (*disaster recovery*).
+  * **Folder Berkas Urgen & Legalitas**: Dokumen perizinan NIB/SIUP resmi, NPWP badan usaha, akta perjanjian kerjasama kerahasiaan (*NDA*), dan sertifikasi digital KBLI UMKM.
+* **Protokol Keamanan Ketat: Wajib Autentikasi Google SSO untuk Seluruh Ekspor**:
+  * Menegakkan aturan keamanan bahwa **setiap operasi ekspor berkas baik CSV, Excel (.xlsx), PDF, JSON, SQL, maupun ZIP wajib melalui otentikasi Google SSO**.
+  * Jika pengguna belum menautkan akun Google SSO, sistem menampilkan dialog peringatan keamanan yang mewajibkan penautan Google SSO resmi sebelum pengunduhan dapat dilakukan, mencegah pencurian, kebocoran, atau tereksposnya dokumen rahasia.
+  * Jika pengguna telah terverifikasi Google SSO, proses unduh berkas diizinkan secara instan dan setiap aktivitas dicatat secara otomatis ke dalam **Forensic Audit Trail** dengan rincian nama file, format, email Google pengunduh, IP address, dan stempel waktu.
+  * Diterapkan secara seragam pada modul **Master Data** dan tombol unduh pada modul **Pelaporan**.
+* **Integrasi Menu Navigasi & Kontrol Pengaturan**:
+  * Menambahkan tab menu **Master Data** (`key: 'masterdata'`) pada bilah sisi Desktop Sticky Sidebar dan Mobile Drawer.
+  * Menambahkan saklar kontrol fitur `enableMasterData` pada Pengaturan Sistem (pilar fitur inti dan master kontrol saklar).
+
 * **Pembaruan Fondasi & Tata Letak Responsif Seluruh Perangkat (Mobile, Tablet, Desktop)**:
   * **Navigasi Drawer & Sticky Header Mobile**: Mengintegrasikan drawer slide-over pada `Sidebar.tsx` untuk perangkat smartphone (`< md:`), dilengkapi tombol hamburger di header atas mobile, backdrop gelap, dan tombol tutup `X`. Pada tablet & desktop (`md:` ke atas), sidebar tetap berfungsi sebagai bilah sisi sticky yang kokoh.
   * **Bottom Navigation Bar (1-Jempol)**: Menambahkan bilah navigasi bawah tetap (*fixed bottom bar*) pada layar ponsel dengan menu cepat (Beranda, Kas, RAB, Akun, Menu) yang ramah genggaman satu tangan.
@@ -111,6 +134,7 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 | **Perencanaan** | RAB & Target | Perencanaan anggaran biaya operasional, target omzet bulanan, dan simulasi Titik Impas (*Break-Even Point*). |
 | **Pelaksanaan** | Buku Kas Harian | Pencatatan mutasi kas masuk/keluar, penerbitan kwitansi/faktur digital, dan filter transaksi harian. |
 | **Pelaporan** | Laporan Keuangan | Penyusunan laporan Laba Rugi komprehensif, Neraca Keuangan, dan kepatuhan pajak PPh Final UMKM 0.5% (PP 55/2022). |
+| **Master Data** | Vault & Repositori | Repositori arsip data master (Admin, Pengguna, Laporan, Audit, Backup, Urgen) dengan proteksi ekspor wajib Google SSO. |
 | **Pengaturan** | Konfigurasi Sistem | Master kontrol aktivasi fitur, manajemen rekening bank/e-wallet, serta preferensi notifikasi saldo. |
 | **Akun** | Identitas Bisnis | Profil pengusaha dan identitas badan usaha, verifikasi email, dan penautan akun Google SSO. |
 

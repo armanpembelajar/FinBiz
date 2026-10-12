@@ -10,7 +10,8 @@ import {
   Layers,
   LogOut,
   User,
-  X
+  X,
+  FolderLock
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { key: 'perencanaan', label: 'Perencanaan', icon: CalendarClock, desc: 'RAB & Target', isEnabled: featureControls.enablePerencanaan },
     { key: 'pelaksanaan', label: 'Pelaksanaan', icon: ReceiptText, desc: 'Kas & Catatan', isEnabled: featureControls.enablePelaksanaan },
     { key: 'pelaporan', label: 'Pelaporan', icon: FileBarChart2, desc: 'Laba Rugi & Neraca', isEnabled: featureControls.enablePelaporan },
+    { key: 'masterdata', label: 'Master Data', icon: FolderLock, desc: 'Folder & Ekspor SSO', isEnabled: featureControls.enableMasterData },
     { key: 'pengaturan', label: 'Pengaturan', icon: Settings, desc: 'Kontrol & Sistem', isEnabled: true },
     { key: 'akun', label: 'Akun', icon: UserCheck, desc: 'Profil & Usaha', isEnabled: true },
   ];
