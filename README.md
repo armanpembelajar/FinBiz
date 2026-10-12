@@ -1,24 +1,23 @@
 <div align="center">
   <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 
-  <br />
-  <br />
-
-  [🔗 **Kunjungi Repository FinBiz di GitHub**](https://github.com/armanpembelajar/FinBiz)
+  # 🚀 FinBiz - Web App
+  *Aplikasi Manajemen Keuangan & Bisnis Berbasis AI*
 </div>
 
-# Run and deploy your AI Studio app
+---
 
-This contains everything you need to run your app locally.
+## 📌 Deskripsi Projek
+Aplikasi FinBiz ini dibuat untuk membantu pengelolaan finansial dan bisnis dengan dukungan AI dari Google Gemini.
 
-View your app in AI Studio: https://ai.studio/apps/27b8b040-a437-4a18-8a3e-3b6eb63e35c1
+View app in AI Studio: https://ai.studio/apps/27b8b040-a437-4a18-8a3e-3b6eb63e35c1
 
-## Run Locally
+---
+
+## 🛠️ Cara Menjalankan di Komputer Lokal
 
 **Prerequisites:** Node.js
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. **Install dependencies:**
+   ```bash
+   npm install
