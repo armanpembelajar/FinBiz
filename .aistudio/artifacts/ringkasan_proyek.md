@@ -18,14 +18,14 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 | 2 | **Autentikasi 3D** | Layar Awal 3D | **Kartu 2: Verifikasi OTP Email** | Penambahan interaktivitas sentuhan 3D tilt, pembersihan total elemen/teks demo | ✅ **Selesai (12 Okt 2026)** |
 | 3 | **Autentikasi 3D** | Layar Awal 3D | **Tombol Login Google (GIS SSO)** | Perbaikan pemuatan on-demand Google SDK, resolusi FedCM iframe restriction | ✅ **Selesai (12 Okt 2026)** |
 | 4 | **Autentikasi 3D** | Layar Awal 3D | **Panggung 3D Spatial (Three.js)** | Rotasi orbital partikel keuangan, cinema screens, dan reaktivitas kursor | `-` |
-| 5 | **Autentikasi 3D** | Layar Awal 3D | **Footer Glassmorphic Kiri & Kanan** | Brand FinBiz v3.1 Enterprise & Identitas Kreator Mantangai Dayak | `-` |
+| 5 | **Autentikasi 3D** | Layar Awal 3D | **Footer Glassmorphic Kiri & Kanan** | Penyesuaian responsif mobile: batas max-width, ukuran proporsional di HP tanpa memenuhi layar | ✅ **Selesai (12 Okt 2026)** |
 | 6 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Banner Portal Beranda Eksekutif** | Tampilan status buku kas berjalan, tata letak kokoh tanpa tombol input | `-` |
-| 7 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Saldo Kas & Bank** | Akumulasi likuiditas aktual seluruh rekening dan kas fisik | `-` |
-| 8 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Kas Masuk** | Pemantauan omzet pendapatan usaha periode berjalan | `-` |
-| 9 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Kas Keluar** | Pemantauan beban operasional usaha & HPP berjalan | `-` |
-| 10 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Laba Bersih Operasional**| Kalkulasi margin laba bersih usaha (*Net Profit Margin %*) | `-` |
-| 11 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu Grafik Arus Kas Mingguan** | Visualisasi tren perbandingan pemasukan vs pengeluaran mingguan | `-` |
-| 12 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu Monitoring Serapan Pagu RAB**| Indikator progres serapan anggaran operasional & belanja divisi | `-` |
+| 7 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Saldo Kas & Bank** | Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
+| 8 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Kas Masuk** | Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
+| 9 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Kas Keluar** | Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
+| 10 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu KPI: Laba Bersih Operasional**| Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
+| 11 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu Grafik Arus Kas Mingguan** | Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
+| 12 | **Dashboard Eksekutif** | Dashboard (Beranda) | **Kartu Monitoring Serapan Pagu RAB**| Umpan balik visual interaktif: `hover:-translate-y-0.5 hover:shadow-md active:scale-95` | ✅ **Selesai (12 Okt 2026)** |
 | 13 | **Perencanaan (RAB)** | Perencanaan | **Kartu Banner & Tombol Alokasi RAB**| Form penetapan pagu pos belanja baru & target omzet bulanan | `-` |
 | 14 | **Perencanaan (RAB)** | Perencanaan | **Kartu Tabel Pos Pagu Anggaran** | Daftar alokasi pagu per kategori belanja beserta persentase serapan | `-` |
 | 15 | **Perencanaan (RAB)** | Perencanaan | **Kartu Kalkulator Titik Impas (BEP)**| Simulasi perhitungan titik impas operasional (biaya tetap & variabel) | `-` |
@@ -67,6 +67,15 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
   * Menghapus berkas konfigurasi Sentry lama yang tidak terpasang di dependensi.
   * Mengonfigurasi `vite.config.ts` dan `package.json` agar berjalan stabil di port 3000 dan host `0.0.0.0`.
   * Menjalankan audit `tsc --noEmit` dan `npm run build` dengan hasil 100% bebas eror.
+* **Eliminasi Tombol Unduh ZIP Proyek**:
+  * Menghapus tombol "Unduh ZIP Proyek (VS Code)" di bagian tengah footer layar awal 3D karena sudah tidak efektif seiring tersedianya integrasi push langsung ke GitHub.
+  * Menghilangkan import ikon `Download` yang tidak lagi digunakan dan menjadikan komposisi footer lebih proporsional serta lapang.
+* **Animasi Interaktif Kartu DashboardView**:
+  * Menerapkan animasi transisi hover dan sentuhan (`transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95`) pada seluruh kartu metrik KPI finansial, grafik arus kas mingguan, monitoring alokasi RAB, buku kas pelaksanaan terkini, dan jadwal jatuh tempo usaha.
+  * Memberikan umpan balik taktil dan visual yang responsif bagi pengguna desktop maupun perangkat layar sentuh.
+* **Optimasi Responsif Multi-Device Layar Depan**:
+  * Menyesuaikan ukuran label/kapsul footer kiri (Brand & Versi Sistem) dan kanan (Kreator Mantangai) dengan batasan `max-w-[48%]`, padding kompak (`px-2.5 py-1.5 sm:px-4 sm:py-2.5`), tipografi responsif, dan ikon proporsional agar tidak memenuhi atau meluber pada layar ponsel/HP sempit.
+  * Menyesuaikan padding kartu utama (`p-4 sm:p-6 md:p-7`), input field, tombol aksi, dan kotak 6-digit OTP agar pas dan nyaman diakses di ponsel cerdas (mobile), tablet, hingga layar desktop lebar (`max-w-7xl`).
 
 ### Versi v3.1.0 Enterprise — Minggu, 11 Oktober 2026
 * **Portal Beranda Kokoh & Bersih**: Meniadakan tombol catat transaksi dan dropdown buku kas di dashboard utama agar menjadi kokpit monitoring murni.
@@ -90,9 +99,18 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 
 ---
 
-## 4. Panduan Siklus Pengembangan Berkelanjutan
+## 4. Panduan Siklus Pengembangan Berkelanjutan & Tips Kerja
+
+> ### ⚠️ PRINSIP KETAT & TIPS KERJA:
+> **1. Batasan Intervensi Kode:**  
+> **"Jika tidak ada intruksi/permintaan pembaruan dan permintaan perubahan baik satu bagian kecil dan besar, setengah maupun seluruhnya, maka tidak diperkenankan."**  
+> *(Pengembang / asisten dilarang keras mengubah, menambah, atau memodifikasi kode di luar instruksi spesifik yang diberikan oleh pengguna).*
+> 
+> **2. Dorongan untuk 2 Kebiasaan Penting:**  
+> - **Awal sesi:** `"ringkasan_proyek.md dan lanjutkan"`  
+> - **Akhir sesi:** `"perbarui ringkasan_proyek.md dengan yang sudah dikerjakan hari ini"`  
 
 Untuk menjaga konsistensi dan dokumentasi yang rapi pada setiap sesi kerja:
-1. **Awal Sesi Kerja:** Baca tabel ceklis di atas untuk mengetahui pekerjaan yang berstatus tanda strip (`-`) dan perlu dilanjutkan.
+1. **Awal Sesi Kerja:** Baca tabel ceklis di atas untuk mengetahui pekerjaan yang berstatus tanda strip (`-`) dan hanya kerjakan bagian yang secara eksplisit diinstruksikan.
 2. **Saat Melakukan Pembaruan:** Lakukan pengujian kompilasi (`compile_applet`) dan pemeriksaan tipe data (`lint_applet`).
 3. **Akhir Sesi Kerja:** Perbarui tanggal pembaruan pada header dokumen ini, perbarui status baris tabel terkait menjadi `✅ Selesai (Tanggal)`, dan tambahkan catatan perubahan pada bagian *Catatan Log Riwayat Pembaruan*.

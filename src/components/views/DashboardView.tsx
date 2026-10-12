@@ -98,7 +98,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* 4 Kartu KPI Utama */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Total Saldo */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
             <span>Total Saldo Kas &amp; Bank</span>
             <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center text-teal-700">
@@ -117,7 +117,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* KPI 2: Arus Masuk */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
             <span>Kas Masuk (Omzet Usaha)</span>
             <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-700">
@@ -136,7 +136,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* KPI 3: Arus Keluar */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer">
           <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
             <span>Kas Keluar (Operasional &amp; HPP)</span>
             <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center text-rose-700">
@@ -156,7 +156,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* KPI 4: Laba Bersih */}
         {featureControls.showNetMarginKpi && (
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 cursor-pointer">
             <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
               <span>Laba Operasional Bersih</span>
               <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center text-teal-700">
@@ -179,7 +179,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Grafik Arus Kas Mingguan */}
           {featureControls.showCashflowChart && (
-            <div className={`${featureControls.showBudgetAbsorption ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4`}>
+            <div className={`${featureControls.showBudgetAbsorption ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95`}>
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-slate-900">
@@ -245,7 +245,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Realisasi Anggaran Pos Usaha */}
           {featureControls.showBudgetAbsorption && (
-            <div className={`${featureControls.showCashflowChart ? 'lg:col-span-1' : 'lg:col-span-3'} bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4`}>
+            <div className={`${featureControls.showCashflowChart ? 'lg:col-span-1' : 'lg:col-span-3'} bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95`}>
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-slate-900">
                   Alokasi Pagu Anggaran
@@ -297,7 +297,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Bottom Section: Transaksi Terkini & Tagihan Kewajiban */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 5 Transaksi Pelaksanaan Terkini */}
-        <div className={`${featureControls.showUpcomingDueDates ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden`}>
+        <div className={`${featureControls.showUpcomingDueDates ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95`}>
           <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-slate-900">
@@ -355,7 +355,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Pengingat Kewajiban: Piutang & Utang */}
         {featureControls.showUpcomingDueDates && (
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95">
             <h3 className="text-base font-bold text-slate-900">
               Jadwal Jatuh Tempo Usaha
             </h3>

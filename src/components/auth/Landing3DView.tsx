@@ -11,7 +11,6 @@ import {
   Sparkles,
   ShieldCheck,
   RefreshCw,
-  Download,
   KeyRound,
   ExternalLink
 } from 'lucide-react';
@@ -379,17 +378,17 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       )}
 
       {/* BANNER UCAPAN & KARTU 3D FINBIZ */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-md w-full mx-auto my-auto py-6">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-3.5 sm:px-6 py-2.5 sm:py-6 max-w-[360px] sm:max-w-md w-full mx-auto my-auto">
         {/* Banner Ucapan Selamat Datang */}
-        <div className="w-full text-center space-y-2 mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-teal-500/30 text-teal-300 text-xs font-semibold backdrop-blur-md shadow-lg">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+        <div className="w-full text-center space-y-1.5 sm:space-y-2 mb-3.5 sm:mb-6">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-900/80 border border-teal-500/30 text-teal-300 text-[10px] sm:text-xs font-semibold backdrop-blur-md shadow-lg">
+            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-teal-400" />
             <span>FinBiz Keuangan</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-md">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white drop-shadow-md">
             Selamat Datang di FinBiz
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p className="text-[11px] sm:text-xs md:text-sm text-slate-300 leading-relaxed max-w-sm mx-auto">
             {cardStep === 1
               ? 'Silakan daftar akun atau login dengan Google untuk mengelola keuangan bisnis Anda.'
               : 'Verifikasi akun email Anda dengan 6 digit kode OTP di bawah ini.'}
@@ -444,27 +443,27 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 />
               )}
               {/* Form Pendaftaran Manual */}
-              <form onSubmit={handleRegisterManualSubmit} className="p-6 sm:p-7 space-y-4">
+              <form onSubmit={handleRegisterManualSubmit} className="p-4 sm:p-6 md:p-7 space-y-3 sm:space-y-4">
                 {/* Label Email */}
-                <div className="space-y-1.5">
+                <div className="space-y-1 sm:space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-300">
                     Email
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                    <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3 sm:top-3.5" />
                     <input
                       type="email"
                       required
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
                       placeholder="nama@email.com"
-                      className="w-full pl-10 pr-3.5 py-3 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                      className="w-full pl-9 sm:pl-10 pr-3.5 py-2.5 sm:py-3 bg-slate-950/80 border border-slate-700 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                     />
                   </div>
                 </div>
 
                 {/* Label Kata Sandi */}
-                <div className="space-y-1.5">
+                <div className="space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
                     <label className="block text-xs font-semibold text-slate-300">
                       Kata Sandi
@@ -478,23 +477,23 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </button>
                   </div>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                    <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-3 sm:top-3.5" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
                       placeholder="••••••••••••"
-                      className="w-full pl-10 pr-3.5 py-3 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                      className="w-full pl-9 sm:pl-10 pr-3.5 py-2.5 sm:py-3 bg-slate-950/80 border border-slate-700 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                     />
                   </div>
                 </div>
 
                 {/* Tombol Daftar Akun Manual */}
-                <div className="pt-2">
+                <div className="pt-1 sm:pt-2">
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/40 transition-all active:scale-[0.99] cursor-pointer"
+                    className="w-full py-2.5 sm:py-3.5 px-4 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/40 transition-all active:scale-[0.99] cursor-pointer"
                   >
                     <span>Daftar Akun</span>
                     <ArrowRight className="w-4 h-4 text-teal-200" />
@@ -502,9 +501,9 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </div>
 
                 {/* Pemisah Bersih */}
-                <div className="relative py-1 flex items-center justify-center">
+                <div className="relative py-0.5 sm:py-1 flex items-center justify-center">
                   <div className="border-t border-slate-800 w-full" />
-                  <span className="bg-slate-900 px-3 text-[11px] text-slate-500 uppercase tracking-wider absolute">
+                  <span className="bg-slate-900 px-3 text-[10px] sm:text-[11px] text-slate-500 uppercase tracking-wider absolute">
                     atau
                   </span>
                 </div>
@@ -514,9 +513,9 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="w-full py-3 px-4 bg-slate-950 hover:bg-slate-800/90 border border-slate-700 hover:border-slate-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-3 transition-colors shadow-sm cursor-pointer"
+                    className="w-full py-2.5 sm:py-3 px-4 bg-slate-950 hover:bg-slate-800/90 border border-slate-700 hover:border-slate-600 text-white rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 sm:gap-3 transition-colors shadow-sm cursor-pointer"
                   >
-                    <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" viewBox="0 0 24 24">
                       <path
                         fill="#4285F4"
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -563,30 +562,30 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 />
               )}
               {/* Header Kartu Kedua: Verifikasi Akun Email */}
-              <div className="p-6 pb-2 text-center space-y-1.5">
-                <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
-                  <Mail className="w-5 h-5" />
+              <div className="p-4 sm:p-6 pb-1.5 sm:pb-2 text-center space-y-1 sm:space-y-1.5">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 mx-auto rounded-lg sm:rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-0.5 sm:mb-1 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <h3 className="text-lg font-bold text-white tracking-tight">
+                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
                   Verifikasi Akun Email
                 </h3>
-                <p className="text-xs text-slate-300">
+                <p className="text-[11px] sm:text-xs text-slate-300">
                   Kode 6-digit verifikasi telah dikirim ke:
                 </p>
-                <p className="text-xs font-mono font-bold text-teal-300 truncate px-2 py-0.5 bg-slate-950/60 rounded-lg border border-teal-500/20">
+                <p className="text-[11px] sm:text-xs font-mono font-bold text-teal-300 truncate px-2 py-0.5 bg-slate-950/60 rounded-md sm:rounded-lg border border-teal-500/20">
                   {emailInput}
                 </p>
 
                 {/* Status Supabase Auth */}
-                <div className="pt-1 flex items-center justify-center">
+                <div className="pt-0.5 sm:pt-1 flex items-center justify-center">
                   {isSupabaseConfigured ? (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Supabase Auth Real-Time Aktif
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-teal-500/10 text-teal-300 border border-teal-500/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-medium bg-teal-500/10 text-teal-300 border border-teal-500/30 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0" />
                       Supabase Proyek: xpbfjxzkmnecvcedajpk (Anon Key)
                     </span>
                   )}
@@ -594,14 +593,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               </div>
 
               {/* Form Verifikasi Email */}
-              <form onSubmit={handleVerifyOtpSubmit} className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
-                <div className="space-y-3">
+              <form onSubmit={handleVerifyOtpSubmit} className="p-4 sm:p-6 md:p-7 space-y-3 sm:space-y-4 flex-1 flex flex-col justify-between">
+                <div className="space-y-2.5 sm:space-y-3">
                   {/* 6 Digit Input Boxes */}
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <label className="block text-xs font-semibold text-slate-300 text-center">
                       Masukkan 6 Digit Kode:
                     </label>
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
                       {otpDigits.map((digit, idx) => (
                         <input
                           key={idx}
@@ -612,14 +611,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                           value={digit}
                           onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 bg-slate-950/90 border-2 border-slate-700 focus:border-teal-400 rounded-xl text-center text-lg font-bold font-mono text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-md"
+                          className="w-8 h-10 sm:w-10 sm:h-12 bg-slate-950/90 border-2 border-slate-700 focus:border-teal-400 rounded-lg sm:rounded-xl text-center text-base sm:text-lg font-bold font-mono text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-md"
                         />
                       ))}
                     </div>
                   </div>
 
                   {/* Resend Link */}
-                  <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                  <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-400 px-1">
                     <span>Belum terima kode?</span>
                     <button
                       type="button"
@@ -635,19 +634,19 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </div>
 
                   {/* Tips tautan email */}
-                  <div className="bg-slate-950/60 rounded-xl p-2.5 border border-teal-500/20 text-center">
-                    <p className="text-[11px] text-teal-200/90 leading-tight">
+                  <div className="bg-slate-950/60 rounded-xl p-2 sm:p-2.5 border border-teal-500/20 text-center">
+                    <p className="text-[10px] sm:text-[11px] text-teal-200/90 leading-tight">
                       ✉️ <strong>Tips Praktis:</strong> Anda juga bisa langsung klik tautan <em>&quot;Log In&quot;</em> di inbox email Anda untuk masuk otomatis!
                     </p>
                   </div>
                 </div>
 
                 {/* Tombol Aksi Verifikasi */}
-                <div className="space-y-2 pt-2">
+                <div className="space-y-1.5 sm:space-y-2 pt-1 sm:pt-2">
                   <button
                     type="submit"
                     disabled={isVerifyingOtp}
-                    className="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-500 disabled:opacity-75 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/50 transition-all active:scale-[0.99] cursor-pointer"
+                    className="w-full py-2.5 sm:py-3.5 px-4 bg-teal-600 hover:bg-teal-500 disabled:opacity-75 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/50 transition-all active:scale-[0.99] cursor-pointer"
                   >
                     {isVerifyingOtp ? (
                       <>
@@ -670,7 +669,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   <button
                     type="button"
                     onClick={handleBackToCard1}
-                    className="w-full py-2.5 px-4 text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-2 sm:py-2.5 px-4 text-[11px] sm:text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     <span>Kembali ke Pendaftaran</span>
@@ -682,69 +681,54 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         </div>
       </main>
 
-      {/* FOOTER HALAMAN DEPAN: MEWAH, GEMILAU, TRANSPARAN & 3D */}
-      <footer className="relative z-20 w-full px-4 sm:px-8 py-5 flex items-end justify-between select-none shrink-0 pointer-events-auto gap-4">
+      {/* FOOTER HALAMAN DEPAN: MEWAH, GEMILAU, TRANSPARAN & 3D (RESPONSIF SEMUA DEVICE) */}
+      <footer className="relative z-20 w-full px-3 sm:px-6 md:px-8 py-2.5 sm:py-4 flex items-center sm:items-end justify-between select-none shrink-0 pointer-events-auto gap-2 sm:gap-4 max-w-7xl mx-auto">
         {/* Kiri: Brand & Versi Sistem - 3D Translucent Glassmorphic Capsule */}
-        <div className="group relative">
+        <div className="group relative max-w-[48%] sm:max-w-none shrink-0">
           {/* Ambient Glow Aura */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-xl sm:rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-          <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
-              <Sparkles className="w-4 h-4 text-teal-200 animate-pulse" />
+          <div className="relative flex items-center gap-1.5 sm:gap-3 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-teal-200 animate-pulse" />
             </div>
-            <div className="flex flex-col text-left">
+            <div className="flex flex-col text-left truncate">
               {/* Baris 1: Label FinBiz Keuangan Gemilau Mewah */}
-              <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-teal-100 via-emerald-300 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(20,184,166,0.6)]">
+              <span className="text-[11px] sm:text-xs md:text-sm font-bold sm:font-extrabold tracking-wide bg-gradient-to-r from-teal-100 via-emerald-300 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(20,184,166,0.6)] truncate">
                 FinBiz Keuangan
               </span>
               {/* Baris 2: Versi Sistem agak kecil */}
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
-                <span className="text-[10px] sm:text-xs text-teal-300/90 font-mono font-semibold tracking-wider drop-shadow-sm">
-                  Versi Sistem v3.1 Enterprise
+              <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
+                <span className="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-teal-400 animate-ping shrink-0" />
+                <span className="text-[9px] sm:text-[10px] md:text-xs text-teal-300/90 font-mono font-semibold tracking-wider drop-shadow-sm truncate">
+                  Versi Sistem v3.1.2 Enterprise
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tengah: Tombol Unduh ZIP Proyek untuk Pengujian di VS Code (Selalu Terkini) */}
-        <div className="flex items-center justify-center">
-          <a
-            href={`/FinBiz-Project-Source.zip?v=${Date.now()}`}
-            download="FinBiz-Project-Source.zip"
-            onClick={() => showToast('📦 Mengunduh ZIP Proyek FinBiz terbaru (Lengkap & Terkini)')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-900/60 hover:bg-slate-800/85 backdrop-blur-xl border border-teal-500/40 hover:border-teal-400 text-teal-300 hover:text-teal-200 text-xs font-semibold shadow-lg hover:shadow-teal-950/60 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
-            title="Unduh seluruh source code dalam bentuk file ZIP untuk diuji di VS Code (Selalu Terkini)"
-          >
-            <Download className="w-3.5 h-3.5 text-teal-400" />
-            <span className="hidden sm:inline">Unduh ZIP Proyek (VS Code)</span>
-            <span className="sm:hidden">Unduh ZIP</span>
-          </a>
-        </div>
-
         {/* Kanan: Kreator & Identitas - 3D Translucent Glassmorphic Capsule */}
-        <div className="group relative">
+        <div className="group relative max-w-[48%] sm:max-w-none shrink-0">
           {/* Ambient Glow Aura */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-xl sm:rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-          <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
-            <div className="flex flex-col text-right">
+          <div className="relative flex items-center gap-1.5 sm:gap-3 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
+            <div className="flex flex-col text-right truncate">
               {/* Baris 1: Label Kreator App Mantangai Gemilau Emas/Teal */}
-              <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-amber-100 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)]">
+              <span className="text-[11px] sm:text-xs md:text-sm font-bold sm:font-extrabold tracking-wide bg-gradient-to-r from-amber-100 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] truncate">
                 Kreator App Mantangai
               </span>
               {/* Baris 2: Uluh Lewu Dayak agak kecil bernuansa kristal */}
-              <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                <span className="text-[10px] sm:text-xs text-emerald-300/90 font-semibold tracking-wide drop-shadow-sm">
+              <div className="flex items-center justify-end gap-1 sm:gap-1.5 mt-0.5">
+                <span className="text-[9px] sm:text-[10px] md:text-xs text-emerald-300/90 font-semibold tracking-wide drop-shadow-sm truncate">
                   Uluh Lewu Dayak
                 </span>
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
               </div>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400/20 via-emerald-500/30 to-teal-600/30 border border-emerald-300/50 flex items-center justify-center text-emerald-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
-              <ShieldCheck className="w-4 h-4 text-emerald-300" />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-400/20 via-emerald-500/30 to-teal-600/30 border border-emerald-300/50 flex items-center justify-center text-emerald-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
+              <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-300" />
             </div>
           </div>
         </div>
