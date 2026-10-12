@@ -9,10 +9,6 @@ export interface UserProfile {
   isLoggedIn: boolean;
   googleLinked: boolean;
   googleEmail?: string;
-  githubLinked?: boolean;
-  githubUsername?: string;
-  supabaseLinked?: boolean;
-  authMethod?: 'password' | 'google' | 'github' | 'otp';
   avatarUrl?: string;
 
   // Identitas Lengkap Pengguna

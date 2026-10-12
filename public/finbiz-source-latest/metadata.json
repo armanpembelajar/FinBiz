@@ -1,8 +1,0 @@
-{
-  "name": "FinBiz Mantangai",
-  "description": "Aplikasi tata kelola keuangan bisnis dan UMKM dengan modul Dashboard, Perencanaan, Pelaksanaan, Pelaporan, dan Pengaturan profil akun terintegrasi.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

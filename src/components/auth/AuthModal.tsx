@@ -37,10 +37,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onProceedToAkun,
 }) => {
   const [authMode, setAuthMode] = useState<'masuk' | 'daftar'>('masuk');
-  const [emailInput, setEmailInput] = useState(userProfile.email || '');
-  const [passwordInput, setPasswordInput] = useState('');
-  const [nameInput, setNameInput] = useState(userProfile.name || '');
-  const [businessNameInput, setBusinessNameInput] = useState(userProfile.businessName || '');
+  const [emailInput, setEmailInput] = useState(userProfile.email || 'pemilik@niagamandiri.id');
+  const [passwordInput, setPasswordInput] = useState('••••••••••••');
+  const [nameInput, setNameInput] = useState(userProfile.name || 'Arman Pratama');
+  const [businessNameInput, setBusinessNameInput] = useState(userProfile.businessName || 'CV Niaga Mandiri Utama');
   const [businessTypeInput, setBusinessTypeInput] = useState(userProfile.businessType || 'Retail & Grosir');
   const [currencyInput, setCurrencyInput] = useState(userProfile.currency || 'IDR (Rp)');
   const [isLinkingGoogle, setIsLinkingGoogle] = useState(false);
@@ -69,10 +69,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setIsLinkingGoogle(false);
         onUpdateProfile({
           googleLinked: true,
-          googleEmail: emailInput || userProfile.email,
-          avatarUrl: userProfile.avatarUrl,
+          googleEmail: 'armandmtg@gmail.com',
+          avatarUrl: userProfile.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80',
         });
-        setGoogleSuccessAlert('Berhasil menautkan akun Google.');
+        setGoogleSuccessAlert('Berhasil menautkan akun Google: armandmtg@gmail.com');
         setTimeout(() => setGoogleSuccessAlert(null), 3500);
       }, 700);
     }
@@ -166,7 +166,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
 
             {/* Formulir Jendela 1 */}
-            <form onSubmit={handleStep1Submit} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleStep1Submit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                   Email Akun Bisnis
@@ -176,7 +176,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <input
                     type="email"
                     required
-                    autoComplete="off"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
                     placeholder="nama@usahawan.id"
@@ -194,10 +193,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <input
                     type="password"
                     required
-                    autoComplete="off"
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    placeholder="Masukkan kata sandi"
+                    placeholder="Minimal 8 karakter"
                     className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all"
                   />
                 </div>
@@ -250,7 +248,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             )}
 
-            <form onSubmit={handleStep2Submit} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleStep2Submit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -261,7 +259,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <input
                       type="text"
                       required
-                      autoComplete="off"
                       value={nameInput}
                       onChange={(e) => setNameInput(e.target.value)}
                       placeholder="Nama lengkap pemilik"
@@ -279,10 +276,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <input
                       type="text"
                       required
-                      autoComplete="off"
                       value={businessNameInput}
                       onChange={(e) => setBusinessNameInput(e.target.value)}
-                      placeholder="Contoh: Nama Usaha Anda"
+                      placeholder="Contoh: CV Niaga Mandiri Utama"
                       className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
@@ -320,12 +316,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
                   >
                     <option value="IDR (Rp)">IDR (Rupiah Indonesia)</option>
-                    <option value="USD (\$)">USD (US Dollar)</option>
+                    <option value="USD ($)">USD (US Dollar)</option>
                   </select>
                 </div>
               </div>
 
-              {/* OPSI PENAUTAN AKUN GOOGLE */}
+              {/* OPSI PENAUTAN AKUN GOOGLE (Bisa di sini atau di Fitur Akun) */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -342,7 +338,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <h4 className="text-xs font-semibold text-slate-900">Penautan Akun Google (Opsional)</h4>
                       <p className="text-[11px] text-slate-500">
                         {userProfile.googleLinked 
-                          ? `Tertaut: ${userProfile.googleEmail || emailInput || userProfile.email}`
+                          ? `Tertaut: ${userProfile.googleEmail || 'armandmtg@gmail.com'}`
                           : 'Bisa ditautkan sekarang atau nanti di Fitur Akun'}
                       </p>
                     </div>

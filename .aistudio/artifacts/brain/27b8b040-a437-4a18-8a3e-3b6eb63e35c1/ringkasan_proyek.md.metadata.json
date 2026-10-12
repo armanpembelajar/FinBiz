@@ -1,5 +1,0 @@
-{
-  "summary":  "Ringkasan Proyek Utuh FinBiz v3.2: Dokumentasi arsitektur Portal Beranda, alur verifikasi kode OTP masuk otomatis dengan opsi 1-klik 'Isi & Masuk' dan clipboard paste, integrasi backend Supabase (PostgreSQL & Auth), integrasi GitHub SSO & kontrol versi, konfigurasi Vercel deployment, serta kepatuhan fiskal per 11 Oktober 2026.",
-  "updatedAt":  "2026-10-11T22:43:00.517199423Z",
-  "userFacing":  true
-}
