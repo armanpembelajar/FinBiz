@@ -47,6 +47,41 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
   const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
+  // Interaktivitas Sentuhan & Gerakan 3D Kartu Real-time (Touch & Mouse Tilt + Glare)
+  const cardContainerRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState<{ x: number; y: number; glareX: number; glareY: number; active: boolean }>({
+    x: 0,
+    y: 0,
+    glareX: 50,
+    glareY: 50,
+    active: false,
+  });
+
+  const handlePointerMove = (clientX: number, clientY: number) => {
+    if (!cardContainerRef.current) return;
+    const rect = cardContainerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const normX = (x / rect.width - 0.5) * 2;
+    const normY = (y / rect.height - 0.5) * 2;
+
+    const maxTilt = 8.5;
+    const tiltX = -normY * maxTilt;
+    const tiltY = normX * maxTilt;
+
+    setTilt({
+      x: Math.round(tiltX * 10) / 10,
+      y: Math.round(tiltY * 10) / 10,
+      glareX: Math.round((x / rect.width) * 100),
+      glareY: Math.round((y / rect.height) * 100),
+      active: true,
+    });
+  };
+
+  const handlePointerLeave = () => {
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50, active: false });
+  };
+
   // Hitung mundur kirim ulang kode verifikasi
   React.useEffect(() => {
     let timer: any;
@@ -361,24 +396,53 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </p>
         </div>
 
-        {/* CONTAINER KARTU 3D DENGAN EFEK BERBALIK (3D FLIP CARD) */}
-        <div className="relative w-full mx-auto" style={{ perspective: '1400px' }}>
+        {/* CONTAINER KARTU 3D DENGAN EFEK BERBALIK & SENTUHAN INTERAKTIF */}
+        <div
+          ref={cardContainerRef}
+          onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
+          onMouseLeave={handlePointerLeave}
+          onTouchStart={(e) => {
+            if (e.touches[0]) handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+          }}
+          onTouchMove={(e) => {
+            if (e.touches[0]) handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+          }}
+          onTouchEnd={handlePointerLeave}
+          className="relative w-full mx-auto select-none"
+          style={{ perspective: '1400px' }}
+        >
           <div
-            className="relative w-full transition-transform duration-700 ease-out"
+            className="relative w-full transition-transform ease-out"
             style={{
               transformStyle: 'preserve-3d',
-              transform: cardStep === 2 ? 'rotateY(180deg)' : 'rotateY(0deg)',
+              transitionDuration: isFlipping ? '700ms' : tilt.active ? '120ms' : '500ms',
+              transform:
+                cardStep === 2
+                  ? `rotateY(${180 - tilt.y}deg) rotateX(${tilt.x}deg) translateZ(${tilt.active ? 10 : 0}px)`
+                  : `rotateY(${tilt.y}deg) rotateX(${tilt.x}deg) translateZ(${tilt.active ? 10 : 0}px)`,
             }}
           >
             {/* ==================== KARTU PERTAMA: DAFTAR AKUN ==================== */}
             <div
-              className={`w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/90 overflow-hidden transition-all duration-300 ${cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'
-                }`}
+              className={`relative w-full bg-slate-900/95 backdrop-blur-2xl border transition-all duration-300 rounded-3xl overflow-hidden ${
+                tilt.active && cardStep === 1
+                  ? 'border-teal-400/70 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_35px_rgba(45,212,191,0.3)]'
+                  : 'border-slate-700/80 shadow-2xl shadow-black/90'
+              } ${cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'}`}
               style={{
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
               }}
             >
+              {/* Efek Kilau Sentuhan Dinamis Kartu Pertama */}
+              {tilt.active && cardStep === 1 && (
+                <div
+                  className="pointer-events-none absolute inset-0 z-30 rounded-3xl transition-opacity duration-200"
+                  style={{
+                    background: `radial-gradient(circle 300px at ${tilt.glareX}% ${tilt.glareY}%, rgba(45, 212, 191, 0.18), transparent 75%)`,
+                  }}
+                />
+              )}
               {/* Form Pendaftaran Manual */}
               <form onSubmit={handleRegisterManualSubmit} className="p-6 sm:p-7 space-y-4">
                 {/* Label Email */}
@@ -478,14 +542,26 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
             {/* ==================== KARTU KEDUA: VERIFIKASI AKUN EMAIL ==================== */}
             <div
-              className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
-                }`}
+              className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border transition-all duration-300 rounded-3xl overflow-hidden flex flex-col justify-between ${
+                tilt.active && cardStep === 2
+                  ? 'border-teal-300/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95),0_0_40px_rgba(45,212,191,0.4)]'
+                  : 'border-teal-500/40 shadow-2xl shadow-teal-950/70'
+              } ${cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'}`}
               style={{
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)',
               }}
             >
+              {/* Efek Kilau Sentuhan Dinamis Kartu Kedua */}
+              {tilt.active && cardStep === 2 && (
+                <div
+                  className="pointer-events-none absolute inset-0 z-30 rounded-3xl transition-opacity duration-200"
+                  style={{
+                    background: `radial-gradient(circle 300px at ${100 - tilt.glareX}% ${tilt.glareY}%, rgba(45, 212, 191, 0.22), transparent 75%)`,
+                  }}
+                />
+              )}
               {/* Header Kartu Kedua: Verifikasi Akun Email */}
               <div className="p-6 pb-2 text-center space-y-1.5">
                 <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
