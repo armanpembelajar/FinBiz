@@ -23,7 +23,9 @@ import {
   Award,
   Globe,
   LogOut,
-  X
+  X,
+  Fingerprint,
+  KeyRound
 } from 'lucide-react';
 
 interface AkunViewProps {
@@ -71,6 +73,10 @@ export const AkunView: React.FC<AkunViewProps> = ({
   // Google Link State
   const [googleEmailInput, setGoogleEmailInput] = useState(userProfile.googleEmail || 'armandmtg@gmail.com');
   const [isLinkingGoogle, setIsLinkingGoogle] = useState(false);
+
+  // Keamanan Profil: Autentikator & Sidik Jari
+  const [enableAuthenticator, setEnableAuthenticator] = useState<boolean>(userProfile.enableAuthenticator || false);
+  const [enableFingerprint, setEnableFingerprint] = useState<boolean>(userProfile.enableFingerprint || false);
 
   // Logout Confirmation Modal State
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -195,6 +201,8 @@ export const AkunView: React.FC<AkunViewProps> = ({
       businessType,
       currency,
       avatarUrl,
+      enableAuthenticator,
+      enableFingerprint,
       isLoggedIn: true,
     });
     showToast('💾 Seluruh identitas & profil akun berhasil disimpan!');
@@ -856,6 +864,156 @@ export const AkunView: React.FC<AkunViewProps> = ({
               </div>
             </div>
           )}
+        </div>
+
+        {/* ===================== ZONA KEAMANAN: AUTENTIKATOR & SIDIK JARI ===================== */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-teal-600" />
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Keamanan</h2>
+                <p className="text-xs text-slate-500">Autentikasi akun &amp; perangkat.</p>
+              </div>
+            </div>
+            <span
+              className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                enableAuthenticator || enableFingerprint
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                  : 'bg-slate-100 text-slate-600 border border-slate-200'
+              }`}
+            >
+              {enableAuthenticator || enableFingerprint ? '● Aktif' : '○ Nonaktif'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Opsi 1: Autentikator */}
+            <div
+              className={`p-3.5 rounded-xl border transition-all ${
+                enableAuthenticator
+                  ? 'bg-teal-50/60 border-teal-200'
+                  : 'bg-slate-50 border-slate-200'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                      enableAuthenticator
+                        ? 'bg-teal-600 text-white shadow-xs'
+                        : 'bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <KeyRound className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 truncate">
+                        Autentikator
+                      </span>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          enableAuthenticator
+                            ? 'bg-teal-100 text-teal-800'
+                            : 'bg-slate-200 text-slate-600'
+                        }`}
+                      >
+                        {enableAuthenticator ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      Verifikasi 2FA
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !enableAuthenticator;
+                    setEnableAuthenticator(next);
+                    onUpdateProfile({ enableAuthenticator: next });
+                    showToast(next ? '🔐 Autentikator diaktifkan' : '🔓 Autentikator dinonaktifkan');
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    enableAuthenticator ? 'bg-teal-600' : 'bg-slate-300'
+                  }`}
+                  role="switch"
+                  aria-checked={enableAuthenticator}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      enableAuthenticator ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Opsi 2: Sidik Jari */}
+            <div
+              className={`p-3.5 rounded-xl border transition-all ${
+                enableFingerprint
+                  ? 'bg-teal-50/60 border-teal-200'
+                  : 'bg-slate-50 border-slate-200'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                      enableFingerprint
+                        ? 'bg-teal-600 text-white shadow-xs'
+                        : 'bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    <Fingerprint className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-slate-900 truncate">
+                        Sidik Jari
+                      </span>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          enableFingerprint
+                            ? 'bg-teal-100 text-teal-800'
+                            : 'bg-slate-200 text-slate-600'
+                        }`}
+                      >
+                        {enableFingerprint ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      Biometrik perangkat
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !enableFingerprint;
+                    setEnableFingerprint(next);
+                    onUpdateProfile({ enableFingerprint: next });
+                    showToast(next ? '👆 Sidik jari diaktifkan' : '⚪ Sidik jari dinonaktifkan');
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    enableFingerprint ? 'bg-teal-600' : 'bg-slate-300'
+                  }`}
+                  role="switch"
+                  aria-checked={enableFingerprint}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      enableFingerprint ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ===================== ZONA 6: KELUAR SESI ===================== */}

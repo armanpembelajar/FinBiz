@@ -1,7 +1,7 @@
 # Ringkasan Proyek Utuh: FinBiz - Manajemen Keuangan Bisnis & UMKM
 
-> **Versi Sistem:** v3.1.2 Enterprise  
-> **Tanggal Pembaruan Terakhir:** Senin, 12 Oktober 2026 (Pukul 10:10 PDT / 00:10 WIB)  
+> **Versi Sistem:** v3.1.3 Enterprise  
+> **Tanggal Pembaruan Terakhir:** Senin, 12 Oktober 2026 (Pukul 11:05 PDT / 01:05 WIB)  
 > **Status Sistem:** Live Development & Ready for Production  
 > **Lingkungan Server:** Node.js 22 · Vite 8 (Port 3000 / Host 0.0.0.0) · React 19 · TypeScript  
 > **Lisensi:** Apache-2.0  
@@ -14,7 +14,7 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 
 | No | Modul Fitur | Menu | Kartu / Komponen | Pekerjaan Saat Ini | Status Pembaruan (Per 12 Okt 2026) |
 |:--:|---|---|---|---|---|
-| 1 | **Autentikasi 3D** | Layar Awal 3D | **Kartu 1: Form Pendaftaran Akun** | Penambahan interaktivitas sentuhan 3D tilt real-time & kilau refleksi holografik | ✅ **Selesai (12 Okt 2026)** |
+| 1 | **Autentikasi 3D** | Layar Awal 3D | **Kartu 1: Form Pendaftaran Akun** | Penambahan interaktivitas sentuhan 3D tilt, proteksi CAPTCHA wajib klik "Saya bukan robot" | ✅ **Selesai (12 Okt 2026)** |
 | 2 | **Autentikasi 3D** | Layar Awal 3D | **Kartu 2: Verifikasi OTP Email** | Penambahan interaktivitas sentuhan 3D tilt, pembersihan total elemen/teks demo | ✅ **Selesai (12 Okt 2026)** |
 | 3 | **Autentikasi 3D** | Layar Awal 3D | **Tombol Login Google (GIS SSO)** | Perbaikan pemuatan on-demand Google SDK, resolusi FedCM iframe restriction | ✅ **Selesai (12 Okt 2026)** |
 | 4 | **Autentikasi 3D** | Layar Awal 3D | **Panggung 3D Spatial (Three.js)** | Rotasi orbital partikel keuangan, cinema screens, dan reaktivitas kursor | `-` |
@@ -43,15 +43,32 @@ Tabel ceklis di bawah ini dirancang sebagai instrumen pengendali mutu dan pemant
 | 27 | **Profil Usaha (Akun)** | Akun | **Kartu Identitas Usaha & Pemilik** | Input nama usaha, bidang UMKM, NIK, alamat lengkap, dan kontak | `-` |
 | 28 | **Profil Usaha (Akun)** | Akun | **Kartu Meteran Kelengkapan Profil** | Indikator progres skor kelengkapan identitas profil bisnis (0-100%) | `-` |
 | 29 | **Profil Usaha (Akun)** | Akun | **Kartu Pengaturan Avatar & Logo Usaha** | Upload foto profil resmi dan logo identitas bisnis | `-` |
-| 30 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Tersimpan"** | Modal emerald interaktif konfirmasi penyimpanan seluruh modul | `-` |
-| 31 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Keluar"** | Modal konfirmasi logout tunggal, bersih tanpa residu toast footer | `-` |
-| 32 | **Fondasi Sistem** | Lingkungan / Build | **Konfigurasi Server & Linting Bersih** | Migrasi AI Studio Port 3000, eliminasi paket Sentry tak terpakai, zero TS lint error | ✅ **Selesai (12 Okt 2026)** |
+| 30 | **Profil Usaha (Akun)** | Akun | **Kartu Keamanan: Autentikator & Sidik Jari** | Saklar aktivasi fleksibel 2FA Autentikator & Sidik Jari, ikon & label sejajar | ✅ **Selesai (12 Okt 2026)** |
+| 31 | **Fondasi Sistem** | Layout & Navigasi | **Arsitektur Responsif Multi-Device (Mobile, Tablet, Desktop)** | Drawer geser mobile, header sticky HP, bottom nav 1-jempol, padding adaptif | ✅ **Selesai (12 Okt 2026)** |
+| 32 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Tersimpan"** | Modal emerald interaktif konfirmasi penyimpanan seluruh modul | `-` |
+| 33 | **Fondasi Sistem** | Global / Modal | **Sistem Popup Push "Berhasil Keluar"** | Modal konfirmasi logout tunggal, bersih tanpa residu toast footer | `-` |
+| 34 | **Fondasi Sistem** | Lingkungan / Build | **Konfigurasi Server & Linting Bersih** | Migrasi AI Studio Port 3000, eliminasi paket Sentry tak terpakai, zero TS lint error | ✅ **Selesai (12 Okt 2026)** |
 
 > *Catatan Pengisian:* Kolom **Status Pembaruan** mencantumkan status ✅ **Selesai (Tanggal)** untuk bagian yang baru diperbarui. Bagian yang belum memiliki pembaruan ditandai dengan strip (`-`) agar fokus kerja tetap terarah dan teratur.
 
 ---
 
 ## 2. Catatan Log Riwayat Pembaruan Sistem (Changelog)
+
+### Versi v3.1.3 Enterprise — Senin, 12 Oktober 2026
+* **Pembaruan Fondasi & Tata Letak Responsif Seluruh Perangkat (Mobile, Tablet, Desktop)**:
+  * **Navigasi Drawer & Sticky Header Mobile**: Mengintegrasikan drawer slide-over pada `Sidebar.tsx` untuk perangkat smartphone (`< md:`), dilengkapi tombol hamburger di header atas mobile, backdrop gelap, dan tombol tutup `X`. Pada tablet & desktop (`md:` ke atas), sidebar tetap berfungsi sebagai bilah sisi sticky yang kokoh.
+  * **Bottom Navigation Bar (1-Jempol)**: Menambahkan bilah navigasi bawah tetap (*fixed bottom bar*) pada layar ponsel dengan menu cepat (Beranda, Kas, RAB, Akun, Menu) yang ramah genggaman satu tangan.
+  * **Proteksi Padding Adaptif**: Menyesuaikan padding konten utama (`p-3.5 sm:p-5 md:p-8`) dan padding bawah (`pb-24 md:pb-8`) agar seluruh kartu, tabel, dan tombol aksi tidak terpotong atau tertutup oleh bilah navigasi ponsel.
+  * **Kerapian Struktur**: Seluruh struktur komponen internal tetap utuh tanpa merusak logika atau dependensi modul lainnya.
+* **Keamanan di Profil Pengguna (Autentikator & Sidik Jari)**:
+  * Menempatkan zona Keamanan Akun pada posisi yang logis dan proporsional (antara Tautan Google dan Keluar Sesi pada `AkunView.tsx`).
+  * Menyediakan saklar kontrol bebas (aktif/nonaktif) sesuai preferensi pengguna untuk **Autentikator (2FA)** dan **Sidik Jari (Biometrik perangkat)**.
+  * Menerapkan disiplin desain presisi: ikon dan label sejajar horizontal (`flex items-center gap-2.5`), teks ringkas dan fleksibel, serta badge status instan.
+* **Proteksi CAPTCHA Wajib Klik pada Kartu Halaman Depan**:
+  * Menambahkan komponen CAPTCHA ("Saya bukan robot") tepat di antara kolom entri kata sandi dan tombol "Daftar Akun" pada `Landing3DView.tsx`.
+  * Mewajibkan klik verifikasi sebelum mendaftar: jika belum diklik, pendaftaran dicegah dengan notifikasi peringatan.
+  * Tampilan ringkas dan sejajar dengan animasi pemeriksaan status centang hijau.
 
 ### Versi v3.1.2 Enterprise — Senin, 12 Oktober 2026
 * **Interaktivitas Sentuhan Kartu 3D (*Touch & Hover 3D Tilt*)**:

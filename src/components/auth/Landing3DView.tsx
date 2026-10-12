@@ -37,6 +37,23 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  // Captcha State (Wajib Klik)
+  const [isCaptchaChecked, setIsCaptchaChecked] = useState<boolean>(false);
+  const [isCaptchaVerifying, setIsCaptchaVerifying] = useState<boolean>(false);
+
+  const handleToggleCaptcha = () => {
+    if (isCaptchaChecked) {
+      setIsCaptchaChecked(false);
+      return;
+    }
+    if (isCaptchaVerifying) return;
+    setIsCaptchaVerifying(true);
+    setTimeout(() => {
+      setIsCaptchaVerifying(false);
+      setIsCaptchaChecked(true);
+    }, 500);
+  };
+
   // Kartu 2: Input OTP Verifikasi Email (6 Kotak Kosong Bersih)
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [resendCountdown, setResendCountdown] = useState<number>(45);
@@ -106,6 +123,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
     if (!passwordInput.trim()) {
       showToast('⚠️ Silakan masukkan Kata Sandi Anda');
+      return;
+    }
+    if (!isCaptchaChecked) {
+      showToast('⚠️ Wajib klik captcha "Saya bukan robot"');
       return;
     }
 
@@ -489,6 +510,44 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </div>
                 </div>
 
+                {/* Captcha Verifikasi: Wajib Klik Bukan Robot */}
+                <div
+                  onClick={handleToggleCaptcha}
+                  className={`p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer select-none flex items-center justify-between gap-2.5 ${
+                    isCaptchaChecked
+                      ? 'bg-teal-950/40 border-teal-500/50 shadow-xs'
+                      : 'bg-slate-950/70 border-slate-700 hover:border-slate-600'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className={`w-5 h-5 sm:w-6 sm:h-6 rounded-md border flex items-center justify-center transition-all ${
+                        isCaptchaChecked
+                          ? 'bg-teal-500 border-teal-400 text-slate-950 shadow-xs'
+                          : isCaptchaVerifying
+                          ? 'bg-slate-800 border-teal-500/60'
+                          : 'bg-slate-900 border-slate-600'
+                      }`}
+                    >
+                      {isCaptchaVerifying ? (
+                        <RefreshCw className="w-3.5 h-3.5 text-teal-400 animate-spin" />
+                      ) : isCaptchaChecked ? (
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      ) : null}
+                    </div>
+                    <span className="text-xs font-semibold text-slate-200">
+                      {isCaptchaVerifying ? 'Memeriksa...' : 'Saya bukan robot'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-slate-400 shrink-0">
+                    <ShieldCheck className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isCaptchaChecked ? 'text-teal-400' : 'text-slate-500'}`} />
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400">
+                      CAPTCHA
+                    </span>
+                  </div>
+                </div>
+
                 {/* Tombol Daftar Akun Manual */}
                 <div className="pt-1 sm:pt-2">
                   <button
@@ -701,7 +760,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
                 <span className="inline-block w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-teal-400 animate-ping shrink-0" />
                 <span className="text-[9px] sm:text-[10px] md:text-xs text-teal-300/90 font-mono font-semibold tracking-wider drop-shadow-sm truncate">
-                  Versi Sistem v3.1.2 Enterprise
+                  Versi Sistem v3.1.3 Enterprise
                 </span>
               </div>
             </div>

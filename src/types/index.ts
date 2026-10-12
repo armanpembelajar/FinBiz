@@ -22,6 +22,10 @@ export interface UserProfile {
   phone?: string;             // Kontak Telepon / WhatsApp
   roleTitle?: string;         // Jabatan (misal: Pemilik Usaha / Direktur)
   nik?: string;               // Nomor Induk Kependudukan (NIK)
+
+  // Keamanan Profil Tambahan
+  enableAuthenticator?: boolean; // Autentikator 2FA
+  enableFingerprint?: boolean;   // Sidik Jari / Biometrik
 }
 
 export interface Transaction {
