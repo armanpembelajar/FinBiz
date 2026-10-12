@@ -13,7 +13,6 @@ import {
   Sparkles, 
   ShieldCheck, 
   RefreshCw,
-  Copy,
   UserPlus,
   LogIn,
   Eye,
@@ -42,20 +41,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   const [cardStep, setCardStep] = useState<1 | 2>(1);
   const [, setIsFlipping] = useState<boolean>(false);
 
-  // Tab di Kartu 1: 'masuk' atau 'daftar' (Kembali seperti semula dengan tombol daftar lengkap)
+  // Tab di Kartu 1: 'masuk' atau 'daftar'
   const [authMode, setAuthMode] = useState<'masuk' | 'daftar'>('daftar');
 
-  // Input Formulir
-  const [nameInput, setNameInput] = useState<string>(
-    userProfile.name || 'Arkas Mantangai'
-  );
-  const [businessNameInput, setBusinessNameInput] = useState<string>(
-    userProfile.businessName || 'SDN 1 Mantangai Tengah'
-  );
-  const [emailInput, setEmailInput] = useState<string>(
-    userProfile.email || 'arkas.sdn1mantangaitengah@gmail.com'
-  );
-  const [passwordInput, setPasswordInput] = useState<string>('••••••••••••');
+  // Input Formulir Bersih dari Default Value Dummy
+  const [nameInput, setNameInput] = useState<string>(userProfile.name || '');
+  const [businessNameInput, setBusinessNameInput] = useState<string>(userProfile.businessName || '');
+  const [emailInput, setEmailInput] = useState<string>(userProfile.email || '');
+  const [passwordInput, setPasswordInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   // Kartu 2: Input OTP 6-Digit Verifikasi Email
@@ -87,13 +80,12 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setTimeout(() => setFeedbackNotice(null), 3800);
   };
 
-  // Pindah ke Kartu OTP (Kotak Input 6 Digit Bersih Kosong Siap Diinput Pengguna)
+  // Pindah ke Kartu OTP
   const handleProceedToOtpCard = (emailTarget?: string, codeToUse?: string) => {
     const target = emailTarget || emailInput;
     const code = codeToUse || currentOtpCode;
     setIsFlipping(true);
 
-    // Kotak 6-digit kosong agar pengguna dapat mengetik sendiri kodenya
     setOtpDigits(['', '', '', '', '', '']);
 
     setTimeout(() => {
@@ -124,13 +116,12 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
 
     onUpdateProfile({
-      name: authMode === 'daftar' ? nameInput.trim() : (userProfile.name || 'Arkas Mantangai'),
-      businessName: authMode === 'daftar' ? businessNameInput.trim() : (userProfile.businessName || 'SDN 1 Mantangai Tengah'),
+      name: authMode === 'daftar' ? nameInput.trim() : userProfile.name,
+      businessName: authMode === 'daftar' ? businessNameInput.trim() : userProfile.businessName,
       email: emailInput.trim(),
       authMethod: 'password',
     });
 
-    // Generate kode OTP 6-digit
     const generated = Math.floor(100000 + Math.random() * 900000).toString();
     const otpRes = await sendEmailOtp(emailInput.trim());
     const finalCode = otpRes.code || generated;
@@ -139,15 +130,13 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setOtpDigits(['', '', '', '', '', '']);
     setIsSimulatedOtp(otpRes.isSimulated);
 
-    // Putar kartu ke Kartu 2 (Verifikasi OTP) dengan kotak input bersih
     handleProceedToOtpCard(emailInput.trim(), finalCode);
   };
 
-  // 2. LOGIN DENGAN GOOGLE (SSO Google Terintegrasi & Bersih)
+  // 2. LOGIN DENGAN GOOGLE
   const handleGoogleLogin = () => {
     const googleClientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
 
-    // Jika ada Client ID Google & Google Identity Services (GIS) aktif di browser
     if (googleClientId && (window as any).google?.accounts?.oauth2) {
       try {
         const client = (window as any).google.accounts.oauth2.initTokenClient({
@@ -162,7 +151,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 const userInfo = await res.json();
                 if (userInfo.email) {
                   onUpdateProfile({
-                    name: userInfo.name || 'Arkas Mantangai',
+                    name: userInfo.name || userProfile.name,
                     email: userInfo.email,
                     avatarUrl: userInfo.picture || userProfile.avatarUrl,
                     googleLinked: true,
@@ -187,44 +176,38 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       }
     }
 
-    // Jika Supabase terhubung dengan OAuth Google
     if (isSupabaseConfigured()) {
       signInWithGoogleSupabase().then((res) => {
         if (res.redirect) return;
-        const targetEmail = emailInput.trim().includes('@gmail.com')
-          ? emailInput.trim()
-          : 'arkas.sdn1mantangaitengah@gmail.com';
+        const targetEmail = emailInput.trim();
         onUpdateProfile({
-          name: 'Arkas SDN 1 Mantangai Tengah',
+          name: nameInput.trim() || userProfile.name,
           email: targetEmail,
           googleLinked: true,
           googleEmail: targetEmail,
           authMethod: 'google',
           isLoggedIn: true,
         });
-        showToast(`🎉 Berhasil masuk dengan Akun Google: ${targetEmail}!`);
+        showToast(`🎉 Berhasil masuk dengan Akun Google!`);
         onLogin('akun');
       });
       return;
     }
 
-    // Masuk cepat dengan Akun Google resmi
-    const targetGoogleEmail = emailInput.trim().includes('@gmail.com')
-      ? emailInput.trim()
-      : 'arkas.sdn1mantangaitengah@gmail.com';
+    const targetGoogleEmail = emailInput.trim();
     onUpdateProfile({
-      name: userProfile.name || 'Arkas SDN 1 Mantangai Tengah',
+      name: nameInput.trim() || userProfile.name,
       email: targetGoogleEmail,
       googleLinked: true,
       googleEmail: targetGoogleEmail,
       authMethod: 'google',
       isLoggedIn: true,
     });
-    showToast(`🎉 Berhasil masuk dengan Akun Google: ${targetGoogleEmail}!`);
+    showToast(`🎉 Berhasil masuk dengan Akun Google!`);
     onLogin('akun');
   };
 
-  // 3. LOGIN DENGAN GITHUB (GitHub OAuth)
+  // 3. LOGIN DENGAN GITHUB
   const handleGitHubLogin = async () => {
     if (isSupabaseConfigured()) {
       showToast('🚀 Mengarahkan ke GitHub OAuth via Supabase...');
@@ -232,14 +215,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       if (res.redirect) return;
     }
 
-    // Masuk sebagai pengguna GitHub
-    const githubEmail = 'arkas.developer@github.com';
-    const githubName = 'Arkas Mantangai (GitHub)';
     onUpdateProfile({
-      name: githubName,
-      email: githubEmail,
+      name: nameInput.trim() || userProfile.name,
+      email: emailInput.trim(),
       githubLinked: true,
-      githubUsername: 'arkas-finbiz',
       authMethod: 'github',
       isLoggedIn: true,
     });
@@ -247,7 +226,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     onLogin('akun');
   };
 
-  // 4. KARTU KEDUA: Verifikasi Kode OTP 6 Digit
+  // 4. VERIFIKASI OTP
   const handleVerifyOtpSubmit = async (customDigits?: string[]) => {
     const digitsToVerify = customDigits || otpDigits;
     const fullCode = digitsToVerify.join('');
@@ -280,7 +259,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }, 400);
   };
 
-  // Salin Kode ke Clipboard
   const handleCopyOtpCode = () => {
     navigator.clipboard?.writeText(currentOtpCode);
     setCopiedCode(true);
@@ -288,7 +266,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  // Kembali ke Kartu Pertama (Berbalik ke Depan)
   const handleBackToCard1 = () => {
     setIsFlipping(true);
     setTimeout(() => {
@@ -298,7 +275,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }, 350);
   };
 
-  // Kirim Ulang Kode Verifikasi
   const handleResendOtp = async () => {
     if (resendCountdown > 0) return;
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -312,7 +288,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     showToast(`📩 Kode OTP baru [${code}] telah disiapkan untuk ${emailInput}`);
   };
 
-  // Perubahan Digit OTP dengan Auto-Advance & Auto-Submit
   const handleOtpDigitChange = (index: number, val: string) => {
     if (val.length > 1) {
       const digits = val.replace(/\D/g, '').slice(0, 6).split('');
@@ -344,7 +319,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
   };
 
-  // Handle Paste Clipboard pada input OTP
   const handleOtpPaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
@@ -396,7 +370,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
       {/* BANNER UCAPAN & KARTU 3D FINBIZ */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-md w-full mx-auto my-auto py-8">
-        {/* Banner Ucapan Selamat Datang Bersih & Anggun */}
         <div className="w-full text-center space-y-2 mb-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/90 border border-teal-500/40 text-teal-300 text-xs font-semibold backdrop-blur-md shadow-lg shadow-teal-950/50">
             <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
@@ -415,7 +388,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </p>
         </div>
 
-        {/* CONTAINER KARTU 3D DENGAN EFEK BERBALIK (3D FLIP CARD) */}
+        {/* CONTAINER KARTU 3D */}
         <div className="relative w-full mx-auto" style={{ perspective: '1400px' }}>
           <div
             className="relative w-full transition-transform duration-700 ease-out"
@@ -424,7 +397,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               transform: cardStep === 2 ? 'rotateY(180deg)' : 'rotateY(0deg)',
             }}
           >
-            {/* ==================== KARTU PERTAMA: MASUK / DAFTAR AKUN ==================== */}
+            {/* KARTU PERTAMA: MASUK / DAFTAR AKUN */}
             <div
               className={`w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/90 overflow-hidden transition-all duration-300 ${
                 cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'
@@ -435,7 +408,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               }}
             >
               <div className="p-6 sm:p-7">
-                {/* TAB SWITCHER: MASUK AKUN VS DAFTAR AKUN BARU (SESUAI SEMULA) */}
+                {/* TAB SWITCHER */}
                 <div className="grid grid-cols-2 p-1 bg-slate-950/80 border border-slate-800 rounded-2xl mb-5 text-xs font-semibold">
                   <button
                     type="button"
@@ -463,12 +436,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </button>
                 </div>
 
-                {/* Formulir Otentikasi Kartu 1 */}
-                <form onSubmit={handleAuthSubmit} className="space-y-4">
-                  {/* Field Khusus Jika Mode DAFTAR */}
+                {/* FORMULIR OTENTIKASI */}
+                <form onSubmit={handleAuthSubmit} className="space-y-4" autoComplete="off">
                   {authMode === 'daftar' && (
                     <>
-                      {/* Nama Lengkap Pemilik / Admin */}
                       <div className="space-y-1.5 animate-in fade-in duration-200">
                         <label className="block text-xs font-semibold text-slate-300">
                           Nama Lengkap Pemilik / Pengelola <span className="text-rose-400">*</span>
@@ -478,15 +449,15 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                           <input
                             type="text"
                             required
+                            autoComplete="off"
                             value={nameInput}
                             onChange={(e) => setNameInput(e.target.value)}
-                            placeholder="Contoh: Arkas Mantangai"
+                            placeholder="Nama lengkap pemilik"
                             className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                           />
                         </div>
                       </div>
 
-                      {/* Nama Usaha / Instansi */}
                       <div className="space-y-1.5 animate-in fade-in duration-200">
                         <label className="block text-xs font-semibold text-slate-300">
                           Nama Usaha / Lembaga / Sekolah <span className="text-rose-400">*</span>
@@ -496,9 +467,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                           <input
                             type="text"
                             required
+                            autoComplete="off"
                             value={businessNameInput}
                             onChange={(e) => setBusinessNameInput(e.target.value)}
-                            placeholder="Contoh: SDN 1 Mantangai Tengah"
+                            placeholder="Contoh: Nama Usaha Anda"
                             className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                           />
                         </div>
@@ -506,7 +478,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </>
                   )}
 
-                  {/* Field Email */}
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
                       Email Akun Bisnis / Pribadi <span className="text-rose-400">*</span>
@@ -516,6 +487,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       <input
                         type="email"
                         required
+                        autoComplete="off"
                         value={emailInput}
                         onChange={(e) => setEmailInput(e.target.value)}
                         placeholder="nama@email.com"
@@ -524,7 +496,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Field Kata Sandi */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <label className="block text-xs font-semibold text-slate-300">
@@ -553,15 +524,15 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
+                        autoComplete="off"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
-                        placeholder="Minimal 8 karakter"
+                        placeholder="Masukkan kata sandi"
                         className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                       />
                     </div>
                   </div>
 
-                  {/* TOMBOL UTAMA KARTU 1 (ADA TOMBOL DAFTAR / TOMBOL MASUK) */}
                   <div className="pt-2">
                     {authMode === 'daftar' ? (
                       <button
@@ -584,7 +555,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     )}
                   </div>
 
-                  {/* Pemisah Bersih */}
                   <div className="relative py-1 flex items-center justify-center">
                     <div className="border-t border-slate-800 w-full" />
                     <span className="bg-slate-900 px-3 text-[11px] text-slate-500 uppercase tracking-wider absolute font-semibold">
@@ -592,9 +562,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </span>
                   </div>
 
-                  {/* Tombol Resmi SSO: Google & GitHub */}
                   <div className="space-y-2">
-                    {/* Google SSO */}
                     <button
                       type="button"
                       onClick={handleGoogleLogin}
@@ -609,7 +577,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       <span>Masuk dengan Akun Google</span>
                     </button>
 
-                    {/* GitHub SSO */}
                     <button
                       type="button"
                       onClick={handleGitHubLogin}
@@ -622,7 +589,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </button>
                   </div>
 
-                  {/* Switcher Bawah Cepat */}
                   <div className="pt-2 text-center text-xs text-slate-400">
                     {authMode === 'daftar' ? (
                       <p>
@@ -652,7 +618,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               </div>
             </div>
 
-            {/* ==================== KARTU KEDUA: VERIFIKASI AKUN EMAIL DENGAN OTP ==================== */}
+            {/* KARTU KEDUA: VERIFIKASI OTP */}
             <div
               className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${
                 cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
@@ -663,7 +629,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 transform: 'rotateY(180deg)',
               }}
             >
-              {/* Header Kartu Kedua */}
               <div className="p-6 pb-2 text-center space-y-1.5">
                 <div className="w-11 h-11 mx-auto rounded-2xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1 shadow-lg shadow-teal-500/20">
                   <Mail className="w-5 h-5 text-teal-300" />
@@ -681,7 +646,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </div>
               </div>
 
-              {/* Form Verifikasi 6 Digit OTP */}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -690,7 +654,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 className="p-6 pt-2 space-y-5 flex-1 flex flex-col justify-between"
               >
                 <div className="space-y-4">
-                  {/* 6 Digit Input Boxes (Mulai Kosong Agar Pengguna Mengetik Mandiri) */}
                   <div className="space-y-2" onPaste={handleOtpPaste}>
                     <div className="flex items-center justify-between px-1">
                       <label className="block text-xs font-semibold text-slate-300">
@@ -720,7 +683,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Petunjuk Kode Pengujian Sistem Bersih & Rapi */}
                   <div className="p-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-center space-y-1">
                     <p className="text-[11px] text-slate-400">
                       Kode verifikasi uji sistem:{' '}
@@ -737,7 +699,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     </p>
                   </div>
 
-                  {/* Kirim Ulang Kode Countdown */}
                   <div className="flex items-center justify-between text-xs text-slate-400 px-1">
                     <span>Belum menerima kode?</span>
                     <button
@@ -757,7 +718,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </div>
                 </div>
 
-                {/* Tombol Aksi Verifikasi Akun */}
                 <div className="space-y-2 pt-2">
                   <button
                     type="submit"
@@ -797,12 +757,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         </div>
       </main>
 
-      {/* FOOTER HALAMAN DEPAN: MEWAH, GEMILAU, TRANSPARAN & 3D */}
+      {/* FOOTER HALAMAN DEPAN */}
       <footer className="relative z-20 w-full px-4 sm:px-8 py-5 flex items-end justify-between select-none shrink-0 pointer-events-auto gap-4">
-        {/* Kiri: Brand & Versi Sistem - 3D Translucent Glassmorphic Capsule */}
         <div className="group relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
               <Sparkles className="w-4 h-4 text-teal-200 animate-pulse" />
@@ -821,10 +779,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </div>
         </div>
 
-        {/* Kanan: Kreator & Identitas - 3D Translucent Glassmorphic Capsule */}
         <div className="group relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="flex flex-col text-right">
               <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-amber-100 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)]">
