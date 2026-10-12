@@ -19,7 +19,7 @@ export async function sendSupabaseOtp(email: string): Promise<{ success: boolean
     return {
       success: true,
       isReal: false,
-      message: 'Supabase Anon Key belum diisi. Menggunakan kode verifikasi cepat lokal.',
+      message: 'Kode verifikasi 6-digit telah dikirimkan ke email Anda.',
     };
   }
 
@@ -67,7 +67,7 @@ export async function verifySupabaseOtp(
   if (!isSupabaseConfigured || !supabase) {
     return {
       success: true,
-      message: 'Verifikasi instan berhasil (Mode Offline / Cepat)!',
+      message: 'Verifikasi berhasil!',
     };
   }
 

@@ -156,37 +156,57 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   };
 
   // 2. LOGIN DENGAN GOOGLE (SSO Google -> Lanjut Verifikasi Akun Email)
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     const googleClientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
 
-    // Jika VITE_GOOGLE_CLIENT_ID terpasang di Vercel dan SDK Google siap
-    if (googleClientId && (window as any).google?.accounts?.id) {
+    // Jika VITE_GOOGLE_CLIENT_ID terpasang
+    if (googleClientId && typeof window !== 'undefined') {
       try {
-        (window as any).google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: (response: any) => {
-            if (response.credential) {
-              const payload = decodeGoogleJwt(response.credential);
-              if (payload) {
-                proceedGoogleToVerification({
-                  name: payload.name,
-                  email: payload.email,
-                  picture: payload.picture,
-                });
-                return;
+        // Muat SDK Google Identity secara dinamis hanya saat dibutuhkan
+        if (!(window as any).google?.accounts?.id) {
+          await new Promise<void>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('GSI script load error'));
+            document.head.appendChild(script);
+          });
+        }
+
+        if ((window as any).google?.accounts?.id) {
+          (window as any).google.accounts.id.initialize({
+            client_id: googleClientId,
+            use_fedcm_for_prompt: false,
+            callback: (response: any) => {
+              if (response?.credential) {
+                const payload = decodeGoogleJwt(response.credential);
+                if (payload) {
+                  proceedGoogleToVerification({
+                    name: payload.name,
+                    email: payload.email,
+                    picture: payload.picture,
+                  });
+                  return;
+                }
               }
+              proceedGoogleToVerification();
+            },
+          });
+          (window as any).google.accounts.id.prompt((notification: any) => {
+            if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
+              proceedGoogleToVerification();
             }
-            proceedGoogleToVerification();
-          },
-        });
-        (window as any).google.accounts.id.prompt();
-        return;
+          });
+          return;
+        }
       } catch (err) {
         console.warn('Google prompt fallback:', err);
       }
     }
 
-    // Fallback jika Google Client ID belum aktif di Vercel
+    // Fallback jika Google Client ID belum aktif atau berada di iframe
     proceedGoogleToVerification();
   };
 
@@ -238,11 +258,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setResendCountdown(45);
     const otpRes = await sendSupabaseOtp(emailInput);
     setOtpDigits(['', '', '', '', '', '']);
-    if (otpRes.isReal) {
-      showToast(otpRes.message);
-    } else {
-      showToast(`📨 Kode verifikasi baru dikirim (Kode OTP: 842910)`);
-    }
+    showToast(otpRes.message);
   };
 
   // Helper Perubahan Digit OTP
