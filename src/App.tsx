@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useEffect } from 'react';
 import { ActiveTab, UserProfile, Transaction, BudgetItem, FeatureControls } from './types';
 import { initialTransactions, initialBudgetItems, defaultFeatureControls } from './data/mockData';
@@ -18,16 +13,12 @@ import { Landing3DView } from './components/auth/Landing3DView';
 import { TransactionModal } from './components/modals/TransactionModal';
 import { ThreeInteractiveBackground } from './components/common/ThreeInteractiveBackground';
 import { CheckCircle2, LogOut } from 'lucide-react';
-import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('Oktober 2026');
-
-  // Master Kontrol Penuh Atas Semua Fitur (Feature Flags State)
   const [featureControls, setFeatureControls] = useState<FeatureControls>(defaultFeatureControls);
 
-  // Jika modul yang sedang dibuka dinonaktifkan di Pengaturan, otomatis alihkan ke Dashboard
   useEffect(() => {
     if (activeTab === 'perencanaan' && !featureControls.enablePerencanaan) {
       setActiveTab('dashboard');
@@ -42,14 +33,11 @@ export default function App() {
     setFeatureControls((prev) => ({ ...prev, ...updated }));
   };
 
-  // Modal login / ganti akun tambahan
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authStep, setAuthStep] = useState<1 | 2>(1);
-
-  // Modal catat transaksi baru
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState<boolean>(false);
 
-  // Data profil pengguna & usaha dibuat bersih/kosong dari awal (Fresh)
+  // Initial State Profil Bersih
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: '',
     businessName: '',
@@ -72,11 +60,9 @@ export default function App() {
     avatarUrl: '',
   });
 
-  // Data transaksi & pagu anggaran
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [budgetItems, setBudgetItems] = useState<BudgetItem[]>(initialBudgetItems);
 
-  // State Popup Push Notifikasi
   const [showLogoutPushPopup, setShowLogoutPushPopup] = useState<boolean>(false);
   const [savedPushPopup, setSavedPushPopup] = useState<string | null>(null);
 
@@ -89,7 +75,7 @@ export default function App() {
 
   const handleUpdateProfile = (updated: Partial<UserProfile>) => {
     setUserProfile((prev) => ({ ...prev, ...updated }));
-    handleTriggerSavedPopup('Data profil dan identitas usaha Anda berhasil disimpan dan disinkronkan.');
+    handleTriggerSavedPopup('Data profil berhasil disimpan.');
   };
 
   const handleOpenAuthModal = (step: 1 | 2 = 1) => {
@@ -108,14 +94,12 @@ export default function App() {
     setActiveTab(destinationTab || 'akun');
   };
 
-  // Alur khusus: dari Jendela 2 jika sudah lengkap langsung menuju ke Fitur Akun
   const handleProceedToAkun = () => {
     setUserProfile((prev) => ({ ...prev, isLoggedIn: true }));
     setIsAuthModalOpen(false);
     setActiveTab('akun');
   };
 
-  // Handler Keluar dari Akun (Logout)
   const handleLogout = () => {
     setUserProfile((prev) => ({
       ...prev,
@@ -128,7 +112,6 @@ export default function App() {
 
   const handleAddTransaction = (newTx: Transaction) => {
     setTransactions((prev) => [newTx, ...prev]);
-
     if (newTx.type === 'keluar') {
       setBudgetItems((prev) =>
         prev.map((b) => {
@@ -139,7 +122,7 @@ export default function App() {
         })
       );
     }
-    handleTriggerSavedPopup(`Transaksi "${newTx.description}" berhasil dicatat ke dalam buku kas!`);
+    handleTriggerSavedPopup(`Transaksi "${newTx.description}" berhasil dicatat!`);
   };
 
   const handleAddBudgetItem = (newItem: BudgetItem) => {
@@ -147,11 +130,9 @@ export default function App() {
     handleTriggerSavedPopup(`Pos pagu anggaran "${newItem.category}" berhasil ditambahkan.`);
   };
 
-  // JIKA PENGGUNA BELUM LOGIN: TAMPILAN AWAL 3D SAJA
   if (!userProfile.isLoggedIn) {
     return (
       <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-teal-500 selection:text-white">
-        {/* POPUP PUSH: ANDA BERHASIL KELUAR */}
         {showLogoutPushPopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
             <div className="bg-slate-900 border-2 border-rose-500/80 text-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl shadow-rose-950/80 flex flex-col items-center text-center space-y-4 animate-in zoom-in-95 duration-200">
@@ -166,11 +147,8 @@ export default function App() {
                   Anda Berhasil Keluar!
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Sesi akun telah ditutup dan sistem FinBiz kini dikunci kembali dengan aman.
+                  Sesi akun telah ditutup dan sistem dikunci kembali dengan aman.
                 </p>
-              </div>
-              <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-rose-400 h-full w-full animate-pulse transition-all duration-1000" />
               </div>
               <button
                 type="button"
@@ -188,14 +166,12 @@ export default function App() {
           onUpdateProfile={handleUpdateProfile}
           onLogin={handleLogin}
         />
-        <Analytics />
       </div>
     );
   }
 
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-900 flex font-sans antialiased selection:bg-teal-500 selection:text-white">
-      {/* POPUP PUSH: BERHASIL TERSIMPAN */}
       {savedPushPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-slate-900 border-2 border-emerald-500 text-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl shadow-emerald-950/80 flex flex-col items-center text-center space-y-4 animate-in zoom-in-95 duration-200">
@@ -213,9 +189,6 @@ export default function App() {
                 {savedPushPopup}
               </p>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-              <div className="bg-emerald-400 h-full w-full animate-pulse transition-all duration-1000" />
-            </div>
             <button
               type="button"
               onClick={() => setSavedPushPopup(null)}
@@ -227,7 +200,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Global 3D Interactive Background Layer */}
       {featureControls.enableGlobal3DBackground && (
         <div className="fixed inset-0 pointer-events-none z-0 opacity-35 overflow-hidden">
           <ThreeInteractiveBackground
@@ -240,7 +212,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Sidebar Navigasi FinBiz */}
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -250,7 +221,6 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Layout Area */}
       <div className="relative z-10 flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
         <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
           {activeTab === 'dashboard' && (
@@ -316,7 +286,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* Modal Otentikasi & Modal Transaksi */}
       <AuthModal
         isOpen={isAuthModalOpen}
         step={authStep}
@@ -333,7 +302,6 @@ export default function App() {
         onClose={() => setIsTransactionModalOpen(false)}
         onAddTransaction={handleAddTransaction}
       />
-      <Analytics />
     </div>
   );
 }
