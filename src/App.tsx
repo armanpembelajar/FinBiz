@@ -18,6 +18,7 @@ import { Landing3DView } from './components/auth/Landing3DView';
 import { TransactionModal } from './components/modals/TransactionModal';
 import { ThreeInteractiveBackground } from './components/common/ThreeInteractiveBackground';
 import { CheckCircle2, LogOut } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
@@ -342,6 +343,9 @@ export default function App() {
         onClose={() => setIsTransactionModalOpen(false)}
         onAddTransaction={handleAddTransaction}
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
