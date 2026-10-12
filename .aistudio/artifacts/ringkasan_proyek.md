@@ -1,92 +1,168 @@
 # Ringkasan Proyek Utuh: FinBiz - Manajemen Keuangan Bisnis & UMKM
 
-> **Tanggal Pembaruan Terakhir:** Senin, 12 Oktober 2026  
-> **Status Sistem:** Live Online & 100% Siap Ditimpa ke Repositori Asli (Production Ready)  
+> **Tanggal Pembaruan Terakhir:** Minggu, 11 Oktober 2026 (Pukul 09:18 PDT / 23:18 WIB)  
+> **Status Sistem:** Live Online (Production Active)  
 > **URL Produksi:** [https://finbiz-mantangai.vercel.app/](https://finbiz-mantangai.vercel.app/)  
-> **Repository GitHub:** [https://github.com/armanpembelajar/FinBiz](https://github.com/armanpembelajar/FinBiz)  
 > **Versi Tata Letak:** v3.1 (Portal Beranda Kokoh, Bersih & Arsitektur Banner-Centric)  
 > **Lisensi:** Apache-2.0
 
 ---
 
-## TIPS: Pedoman Perintah Sesi Pengembang
+## 1. Ikhtisar & Tujuan Aplikasi
+
+**FinBiz** adalah platform tata kelola finansial terpadu yang dirancang khusus untuk pelaku usaha, wirausaha mandiri, dan UMKM. FinBiz menyatukan kepatuhan akuntansi regulasi Indonesia (termasuk kepatuhan PPh Final UMKM 0.5% PP 55/2022) dengan antarmuka digital berkinerja tinggi, visualisasi panggung 3D interaktif Three.js, dan arsitektur tata kelola tanpa redundansi.
+
+Prinsip utama FinBiz versi 3.1 adalah **Fokus Fungsional & Portal Beranda Kokoh**:
+- **Portal Beranda (Dashboard):** Didesain murni sebagai kokpit pemantauan eksekutif yang bersih, utuh, dan kokoh tanpa tombol atau dropdown input, menyajikan visualisasi data tanpa distraksi.
+- **Pencatatan Terpusat di Pelaksanaan:** Seluruh alur pencatatan mutasi kas dan pembuatan faktur/kwitansi difokuskan secara disiplin pada modul **Pelaksanaan**.
+
+---
+
+## 2. Arsitektur Tampilan & Sistem Popup Push Terpadu
+
+### A. Layar Awal 3D Interaktif & Alur Otentikasi Terpadu (Unauthenticated Stage)
+- **Isolasi Keamanan Total:** Seluruh sistem pembukuan (Sidebar, Dashboard, Perencanaan, Pelaksanaan, Pelaporan, Pengaturan, Akun) **terkunci penuh** sebelum verifikasi akun email selesai 100%.
+- **Panggung Visual 3D Bergulir (Three.js):** Latar belakang 3D partikel finansial yang berputar halus dan bereaksi secara dinamis terhadap kursor mouse.
+- **Alur Masuk Wajib Verifikasi (Mandiri & Google SSO):**
+  1. *Kartu 1 (Pendaftaran / Pemilihan Akun):* Form input Email & Kata Sandi atau tombol resmi *Login dengan Google (SSO)*.
+  2. *Popup Sukses & Animasi Berbalik:* Data akun tersimpan aman, memunculkan popup konfirmasi dan kartu berbalik 3D secara otomatis ke Kartu 2.
+  3. *Kartu 2 (Wajib Verifikasi Akun Email):* Baik pendaftar mandiri maupun pengguna Google SSO **wajib melengkapi 6-digit kode verifikasi email**.
+  4. *Akses Sistem:* Hanya setelah verifikasi kode 6-digit dinyatakan sukses (*"Verifikasi Berhasil"*), sistem FinBiz terbuka dan pengguna masuk ke akun.
+
+### B. Portal Beranda (Dashboard) Bersih, Utuh, & Kokoh
+- **Tanpa Tombol & Dropdown Input:** Meniadakan dropdown buku fiskal dan tombol catat kas di beranda agar ruang pemantauan tetap lapang, berwibawa, dan kokoh.
+- **Badge Status Portal Beranda:** Menampilkan indikator real-time *"Portal Beranda FinBiz · Buku Kas Berjalan Aktif"* yang elegan dan informatif.
+- **4 Kartu Metrik KPI Finansial Utama:**
+  - *Total Saldo Kas & Bank* (akumulasi likuiditas aktual).
+  - *Kas Masuk* (omzet pendapatan periode berjalan).
+  - *Kas Keluar* (beban operasional & HPP).
+  - *Laba Operasional Bersih* (dilengkapi persentase *Net Profit Margin*).
+- **Grafik Tren Arus Kas Mingguan:** Visualisasi perbandingan pemasukan vs pengeluaran.
+- **Monitoring Serapan Pagu Anggaran:** Progress bar serapan dana belanja divisi operasional.
+
+### C. Sistem Popup Push FinBiz
+Aplikasi dilengkapi sistem **Popup Push Modal** terpusat, modern, dan responsif:
+
+1. **Popup Push "Anda Berhasil Keluar" (Logout):**
+   - Muncul saat pengguna menekan tombol **Keluar**.
+   - Menampilkan kartu modal terpusat dengan ikon animasi `LogOut`, badge status *"Sesi Berakhir"*, progres bar animasi, dan tombol *"Tutup & Masuk Kembali"*.
+   - **Bebas Dobel Popup:** Tidak ada lagi toast atau floating banner yang tertinggal di bagian footer layar.
+
+2. **Popup Push "Berhasil Tersimpan":**
+   - Muncul otomatis saat pengguna menyimpan perubahan data:
+     - Menyimpan identitas profil usaha di modul **Akun**.
+     - Menyimpan konfigurasi fitur & rekening perbankan di modul **Pengaturan**.
+     - Mencatat mutasi kas masuk/keluar baru melalui modul **Pelaksanaan**.
+     - Menambahkan alokasi pos pagu anggaran baru di modul **Perencanaan (RAB)**.
+   - Desain kartu modal gelap dengan border emerald, animasi checkmark memantul, rincian data tersimpan, dan tombol konfirmasi *"Oke, Selesai"*.
+
+### D. Eliminasi Header Redundan & Banner Terintegrasi
+- **Penghapusan Bilah Header Atas (`TopBar`):** Tidak ada lagi bilah putih di atas yang memakan ruang pandang.
+- **Banner Eksekutif Seragam:** Setiap modul dipimpin oleh Banner bergradasi gelap (*dark slate to teal*) yang mengintegrasikan judul, deskripsi, dan tombol aksi spesifik modul tersebut.
+- **Sidebar Navigasi Murni:**
+  - Bagian atas murni menampilkan brand FinBiz dan langsung dilanjutkan dengan 6 menu navigasi utama.
+  - Bagian bawah dilengkapi kartu ringkas profil pengguna dan tombol **Keluar** berwarna merah.
+
+---
+
+## 3. Matriks 5 Modul Finansial & 1 Modul Akun Terpadu
+
+| Modul | Peran Utama | Desain Banner & Kontrol Aksi |
+|---|---|---|
+| **1. Dashboard (Beranda)** | Kokpit Pemantauan Kesehatan Finansial | **Banner Kokoh & Bersih**; bebas dari tombol/dropdown input, fokus pada 4 KPI, grafik mingguan, dan serapan RAB. |
+| **2. Perencanaan (RAB)** | Anggaran Biaya & Target Omzet | **Banner RAB Terintegrasi**; tombol `+ Alokasi Pos Baru`, tabel target omzet bulanan, dan kalkulator Titik Impas (BEP). |
+| **3. Pelaksanaan (Buku Kas)** | **Pusat Pencatatan Mutasi Kas & Transaksi** | **Banner Kas Terintegrasi**; tombol `+ Catat Transaksi`, buku kas jurnal harian, pencarian instan, filter pembayaran, dan generator nota. |
+| **4. Pelaporan (Fiskal)** | Laba Rugi, Neraca & Kepatuhan Pajak | **Banner Fiskal Terintegrasi**; tombol aksi *Cetak PDF* dan *Unduh CSV / Excel*, perhitungan PPh Final UMKM 0.5% (PP 55/2022). |
+| **5. Pengaturan (Sistem)**| Kontrol Fitur & Konfigurasi Kas/Bank | **Banner Kontrol Terintegrasi**; switcher sub-tab (*Fitur, Profil, Kas & Bank, Notifikasi*), master saklar fitur. |
+| **6. Akun (Profil Usaha)** | Identitas Lengkap & Integrasi Google | **Banner Profil Terintegrasi**; indikator status penautan Google SSO, upload avatar, dan meteran skor kelengkapan. |
+
+---
+
+## 4. Matriks Komparasi Sebelum & Sesudah Pembaruan
+
+| Elemen UI/UX | Versi Sebelumnya | Versi Terkini (v3.1) |
+|---|---|---|
+| **Portal Beranda (Dashboard)** | Memuat tombol catat transaksi & dropdown periode | **Bersih, Utuh, & Kokoh**; murni sebagai kokpit pemantauan eksekutif |
+| **Lokasi Pencatatan Kas** | Tersebar di header, atas sidebar, dan dashboard | **Terpusat & Disiplin di Fitur Pelaksanaan** |
+| **Header Atas (TopBar)** | Bilah putih memakan ruang di atas setiap halaman | **Dihapus total**; langsung dipimpin oleh Banner |
+| **Notifikasi Keluar (Logout)** | Dobel notifikasi (modal tengah + toast di footer) | **Satu Popup Push terpusat**, bersih tanpa residu toast footer |
+| **Notifikasi Tersimpan** | Hanya toast teks biasa | **Popup Push Modal "Berhasil Tersimpan"** berdesain emerald interaktif |
+| **Sidebar Bagian Atas** | Padat oleh tombol catat kas | **Murni & Bersih**, langsung menampilkan menu navigasi di bawah logo brand |
+| **Sidebar Bagian Bawah** | Tidak ada profil terpadu | **Footer Akun Lengkap** dengan avatar, nama usaha, & tombol Logout merah |
+
+---
+
+## 5. Ringkasan Teknis (Tech Stack)
+
+- **Framework:** React 19 (SPA dengan Vite 8 & TypeScript)
+- **Styling:** Tailwind CSS v4 dengan sistem palet warna Slate-Teal-Emerald
+- **3D Graphics:** Three.js (Interactive particles, spatial background & lighting)
+- **Ikonografi:** Lucide React
+- **Validasi Kualitas Kode:** Lulus kompilasi `tsc` & `npm run lint` dengan zero error
+
+---
+
+## 6. Tips & Budaya Kerja Sesi
 
 > ### TIPS:
 > **Dorongan untuk 2 kebiasaan penting:**
-> - **Awal sesi:** `"Tolong pelajari ringkasan_proyek.md dan,tidak merubah pekerjaan yang ada"`
-> - **Akhir sesi:** `"Perbarui ringkasan_proyek.md dengan yang sudah dikerjakan hari ini"`
+> - **Awal sesi:** `"ringkasan_proyek.md dan lanjutkan"`
+> - **Akhir sesi:** `"perbarui ringkasan_proyek.md dengan yang sudah dikerjakan hari ini"`
 
 ---
 
-## 1. Status Kesiapan Timpa Proyek (Overwrite Readiness)
+## 7. Identitas Pengembang & Penanda Footer Halaman Depan
 
-Proyek ini **100% SIAP DAN AMAN UNTUK DITIMPA LANGSUNG** ke folder proyek lokal Anda yang terhubung dengan GitHub dan Vercel:
+**Identitas Resmi (Tampil pada Footer Halaman Depan - Desain 3D Transparan & Gemilau):**  
+- **Sisi Kiri (Kapsul Glassmorphic 3D & Ikon Sparkles):**  
+  - Baris 1: `FinBiz Keuangan` (tipografi metalik gemilau gradasi emerald-teal)  
+  - Baris 2 (lebih kecil): `Versi Sistem v3.1 Enterprise` (indikator radar aktif & monospace teal)  
+- **Sisi Kanan (Kapsul Glassmorphic 3D & Lencana Perisai):**  
+  - Baris 1: `Kreator App Mantangai` (tipografi metalik gemilau gradasi emas-emerald)  
+  - Baris 2 (lebih kecil): `Uluh Lewu Dayak` (kristal hijau emerald berkilau)  
 
-1. **Halaman Depan Kembali Asli & Elegan:**
-   - Model kartu ganda yang tidak diinginkan telah ditiadakan.
-   - Panggung 3D Interaktif Three.js (emerald, rich particles, auto-rotation & reactive mouse) berjalan mulus.
-   - Kartu 1 (Formulir Pendaftaran & Google SSO) -> Popup Konfirmasi -> Animasi Flip Card 3D -> Kartu 2 (Verifikasi Kode OTP 6-Digit `8 4 2 9 1 0`).
-   - Kapsul footer identitas resmi: `FinBiz Keuangan` · `Versi Sistem v3.1 Enterprise` (kiri) dan `Kreator App Mantangai` · `Uluh Lewu Dayak` (kanan).
+## 8. Panduan Deployment ke Netlify (https://app.netlify.com/)
 
-2. **Google OAuth & Sistem Akun Terpadu:**
-   - Integrasi Google Identity Services (GIS) siap dengan dukungan `VITE_GOOGLE_CLIENT_ID`.
-   - Modul **Akun** mengelola profil lengkap, foto avatar, data usaha, dan penautan akun dengan aman.
+Konfigurasi produksi telah disiapkan secara otomatis:
+- **File Konfigurasi:** `netlify.toml` dan `public/_redirects` (mendukung SPA fallback `/* -> /index.html 200`).
+- **Build Command:** `npm run build`
+- **Publish Directory:** `dist`
 
-3. **5 Modul Finansial Lengkap & Bebas Redundansi:**
-   - **Dashboard:** Portal Beranda bersih, utuh, dan kokoh tanpa tombol/dropdown input pemantauan.
-   - **Perencanaan:** RAB & Analisis BEP (Break Even Point).
-   - **Pelaksanaan:** Pusat pencatatan kas jurnal, filter pembayaran, dan cetak nota.
-   - **Pelaporan:** Laba Rugi, Neraca Keuangan, dan PPh Final UMKM 0.5% (PP 55/2022).
-   - **Pengaturan:** Konfigurasi master saklar fitur dan rekening bank.
+### 2 Opsi Mudah Mengonlinekan ke Netlify:
 
-4. **Validasi Build:**
-   - Kompilasi TypeScript (`npx tsc --noEmit`) : **0 Error**
-   - Kompilasi Vite Bundle (`npm run build`) : **0 Error (Build Succeeded)**
+#### Opsi A: Drag & Drop (Manual Deploy - Paling Cepat)
+1. Buka [app.netlify.com](https://app.netlify.com/) dan login ke akun Netlify Anda.
+2. Masuk ke menu **Sites** -> pilih **"Add new site"** -> pilih **"Deploy manually"**.
+3. Tarik dan lepas (Drag & Drop) folder **`dist`** hasil kompilasi ke area dropzone Netlify.
+4. Situs FinBiz langsung online dengan URL aktif (`.netlify.app`).
 
----
+#### Opsi B: Sambungkan via Repository Git (GitHub / GitLab)
+1. Push proyek ke repository GitHub Anda.
+2. Di dashboard Netlify, pilih **"Import an existing project"** dan pilih repository GitHub Anda.
+3. Konfigurasi build otomatis terdeteksi via `netlify.toml`:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist`
+4. Klik **Deploy Site**. Setiap kali Anda commit atau push, Netlify akan memperbarui web secara otomatis.
 
-## 2. Panduan Langkah Menimpa ke Folder Proyek Sebenarnya
+## 9. Panduan Mengaktifkan Google Auth (Google Sign-In Resmi)
 
-### Langkah 1: Siapkan File yang Akan Ditimpa
-Salin seluruh isi folder dan file berikut ke dalam folder proyek lokal Anda di laptop:
-- `src/` (seluruh komponen, data, dan tipe)
-- `public/` (aset statis dan redirect)
-- `index.html`
-- `package.json`
-- `tsconfig.json`
-- `vite.config.ts`
-- `vercel.json` & `netlify.toml`
-
-> ⚠️ **Catatan Penting:** 
-> - **JANGAN** menghapus folder `.git/` di komputer Anda agar koneksi Git ke GitHub tetap tersambung.
-> - **JANGAN** menimpa file `.env` lokal jika Anda sudah menyimpan konfigurasi API key pribadi Anda di sana.
-
-### Langkah 2: Jalankan di Terminal Komputer Anda (VS Code / CMD / PowerShell)
-Jika saat menjalankan `npm install` muncul pesan error ERESOLVE (seperti konflik esbuild/vite):
-```bash
-npm install --legacy-peer-deps
-```
-
-Untuk menguji coba secara lokal:
-```bash
-npm run dev
-```
-*(Buka browser di http://localhost:3000)*
-
-Untuk melakukan pemeriksaan tipe TypeScript tanpa error cmd/PowerShell:
-```bash
-npx tsc --noEmit
-```
-
-### Langkah 3: Push Pembaruan ke GitHub & Vercel
-Setelah diuji di laptop dan berjalan normal, lakukan push ke GitHub:
-```bash
-git add .
-git commit -m "feat: sinkronisasi finbiz v3.1 landing page asli dan modul keuangan utuh"
-git push origin main
-```
-Setelah push selesai, Vercel (`finbiz-mantangai.vercel.app`) akan mendeteksi commit baru dan otomatis memperbarui website yang sedang online dalam hitungan detik!
+Aplikasi FinBiz telah mendukung integrasi resmi **Google Identity Services (GIS)** dengan sistem fallback cerdas:
+- **Status Saat Ini:** Tombol *"Login dengan Google"* sudah dapat digunakan langsung di situs Vercel (`https://finbiz-mantangai.vercel.app/`).
+- **Untuk Memunculkan Popup Akun Google Riil (Google Cloud Console):**
+  1. Buka [console.cloud.google.com](https://console.cloud.google.com/) dan login dengan akun Google Anda.
+  2. Buka menu **APIs & Services** -> **Credentials**.
+  3. Klik **Create Credentials** -> pilih **OAuth client ID**.
+  4. Pilih Application type: **Web application**.
+  5. Pada bagian **Authorized JavaScript origins**, tambahkan:
+     - `https://finbiz-mantangai.vercel.app`
+     - `http://localhost:3000` (untuk pengujian lokal)
+  6. Klik **Create** dan salin **Client ID** yang diberikan (berakhiran `.apps.googleusercontent.com`).
+  7. Di dashboard Vercel Anda:
+     - Masuk ke proyek `finbiz-mantangai` -> **Settings** -> **Environment Variables**.
+     - Tambahkan variabel: `VITE_GOOGLE_CLIENT_ID` dengan nilai Client ID yang disalin tadi.
+     - Klik **Save** lalu lakukan **Redeploy**.
+  8. Sekarang, setiap pengguna yang menekan tombol *"Login dengan Google"* akan disajikan jendela pemilih akun Google resmi dari browser mereka dan foto profil, nama, serta email asli mereka otomatis terisi ke dalam FinBiz!
 
 ---
 
-*Dokumen ini merupakan catatan arsitektur resmi dan panduan sinkronisasi proyek FinBiz.*
+*Dokumen ini merupakan catatan arsitektur resmi dan lengkap dari proyek FinBiz.*

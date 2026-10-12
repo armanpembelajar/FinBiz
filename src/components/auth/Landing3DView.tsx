@@ -11,8 +11,11 @@ import {
   Sparkles, 
   ShieldCheck, 
   RefreshCw,
-  Download
+  Download,
+  KeyRound,
+  ExternalLink
 } from 'lucide-react';
+import { sendSupabaseOtp, verifySupabaseOtp, isSupabaseConfigured } from '../../lib/supabase';
 
 interface Landing3DViewProps {
   userProfile: UserProfile;
@@ -30,13 +33,13 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
-  // Kartu 1: Input Email & Kata Sandi
-  const [emailInput, setEmailInput] = useState<string>(userProfile.email || 'arman30@guru.sd.belajar.id');
-  const [passwordInput, setPasswordInput] = useState<string>('••••••••••••');
+  // Kartu 1: Input Email & Kata Sandi (Semua kolom kosong awal)
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [passwordInput, setPasswordInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  // Kartu 2: Input OTP Verifikasi Email
-  const [otpDigits, setOtpDigits] = useState<string[]>(['8', '4', '2', '9', '1', '0']);
+  // Kartu 2: Input OTP Verifikasi Email (6 Kotak Kosong Bersih)
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [resendCountdown, setResendCountdown] = useState<number>(45);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
   const [isOtpSuccess, setIsOtpSuccess] = useState<boolean>(false);
@@ -80,15 +83,19 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setShowSuccessPopup(true);
 
     // Otomatis setelah 1.2 detik: popup push menutup, kartu pertama hilang & berbalik otomatis ke kartu kedua
-    setTimeout(() => {
+    setTimeout(async () => {
       setShowSuccessPopup(false);
       setIsFlipping(true);
 
-      setTimeout(() => {
+      setTimeout(async () => {
         setCardStep(2);
         setIsFlipping(false);
         setResendCountdown(45);
-        showToast(`✉️ Kode verifikasi telah dikirim ke ${emailInput.trim()}`);
+
+        // Kirim OTP via Supabase jika sudah terkonfigurasi
+        const otpRes = await sendSupabaseOtp(emailInput.trim());
+        setOtpDigits(['', '', '', '', '', '']);
+        showToast(otpRes.message);
       }, 400);
     }, 1250);
   };
@@ -112,9 +119,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
   // Transisi dari Google SSO ke Kartu 2 (Verifikasi Akun Email)
   const proceedGoogleToVerification = (googleData?: { name?: string; email?: string; picture?: string }) => {
-    const chosenEmail = googleData?.email || emailInput || 'arman30@guru.sd.belajar.id';
-    const chosenName = googleData?.name || userProfile.name || 'Arman Pratama';
+    const chosenEmail = googleData?.email || emailInput || '';
+    const chosenName = googleData?.name || userProfile.name || '';
     const chosenAvatar = googleData?.picture || userProfile.avatarUrl;
+
+    if (!chosenEmail) {
+      showToast('⚠️ Silakan masukkan alamat email Anda terlebih dahulu');
+      return;
+    }
 
     // Simpan data profil & email Google (isLoggedIn masih false hingga verifikasi selesai!)
     setEmailInput(chosenEmail);
@@ -122,7 +134,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
       name: chosenName,
       email: chosenEmail,
       avatarUrl: chosenAvatar,
-      googleLinked: true,
+      googleLinked: Boolean(googleData?.email),
       googleEmail: chosenEmail,
       isLoggedIn: false,
     });
@@ -131,15 +143,18 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setShowSuccessPopup(true);
 
     // Otomatis setelah 1.2 detik: kartu berbalik ke Kartu 2 (Verifikasi Akun Email)
-    setTimeout(() => {
+    setTimeout(async () => {
       setShowSuccessPopup(false);
       setIsFlipping(true);
 
-      setTimeout(() => {
+      setTimeout(async () => {
         setCardStep(2);
         setIsFlipping(false);
         setResendCountdown(45);
-        showToast(`✉️ Akun Google (${chosenEmail}) siap. Masukkan 6 digit verifikasi untuk masuk ke sistem.`);
+
+        const otpRes = await sendSupabaseOtp(chosenEmail);
+        setOtpDigits(['', '', '', '', '', '']);
+        showToast(otpRes.message);
       }, 400);
     }, 1250);
   };
@@ -180,7 +195,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   };
 
   // 3. KARTU KEDUA: Verifikasi Akun Email Selesai -> Masuk ke Akun
-  const handleVerifyOtpSubmit = (e?: React.FormEvent) => {
+  const handleVerifyOtpSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const fullCode = otpDigits.join('');
     if (fullCode.length < 6) {
@@ -189,19 +204,26 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
 
     setIsVerifyingOtp(true);
-    setTimeout(() => {
-      setIsVerifyingOtp(false);
-      setIsOtpSuccess(true);
-      showToast('🎉 Verifikasi akun berhasil! Membuka FinBiz...');
+    const result = await verifySupabaseOtp(emailInput, fullCode);
 
-      setTimeout(() => {
-        onUpdateProfile({
-          isLoggedIn: true,
-          email: emailInput,
-        });
-        onLogin('akun');
-      }, 700);
-    }, 500);
+    if (!result.success) {
+      setIsVerifyingOtp(false);
+      showToast(`⚠️ ${result.message}`);
+      return;
+    }
+
+    setIsVerifyingOtp(false);
+    setIsOtpSuccess(true);
+    showToast(`🎉 ${result.message}`);
+
+    setTimeout(() => {
+      onUpdateProfile({
+        isLoggedIn: true,
+        email: emailInput,
+        name: result.user?.user_metadata?.full_name || userProfile.name || '',
+      });
+      onLogin('akun');
+    }, 700);
   };
 
   // Kembali ke Kartu Pertama (Berbalik ke Depan)
@@ -215,11 +237,16 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   };
 
   // Kirim Ulang Kode Verifikasi
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (resendCountdown > 0) return;
     setResendCountdown(45);
-    setOtpDigits(['8', '4', '2', '9', '1', '0']);
-    showToast(`📨 Kode verifikasi baru berhasil dikirim ke ${emailInput}`);
+    const otpRes = await sendSupabaseOtp(emailInput);
+    setOtpDigits(['', '', '', '', '', '']);
+    if (otpRes.isReal) {
+      showToast(otpRes.message);
+    } else {
+      showToast(`📨 Kode verifikasi baru dikirim (Kode OTP: 842910)`);
+    }
   };
 
   // Helper Perubahan Digit OTP
@@ -450,8 +477,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               }}
             >
               {/* Header Kartu Kedua: Verifikasi Akun Email */}
-              <div className="p-6 pb-2 text-center space-y-1">
-                <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1">
+              <div className="p-6 pb-2 text-center space-y-1.5">
+                <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1 shadow-[0_0_15px_rgba(20,184,166,0.2)]">
                   <Mail className="w-5 h-5" />
                 </div>
                 <h3 className="text-lg font-bold text-white tracking-tight">
@@ -460,14 +487,29 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 <p className="text-xs text-slate-300">
                   Kode 6-digit verifikasi telah dikirim ke:
                 </p>
-                <p className="text-xs font-mono font-bold text-teal-300 truncate px-2">
+                <p className="text-xs font-mono font-bold text-teal-300 truncate px-2 py-0.5 bg-slate-950/60 rounded-lg border border-teal-500/20">
                   {emailInput}
                 </p>
+
+                {/* Status Supabase Auth */}
+                <div className="pt-1 flex items-center justify-center">
+                  {isSupabaseConfigured ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Supabase Auth Real-Time Aktif
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-teal-500/10 text-teal-300 border border-teal-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                      Supabase Proyek: xpbfjxzkmnecvcedajpk (Anon Key)
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Form Verifikasi Email */}
-              <form onSubmit={handleVerifyOtpSubmit} className="p-6 sm:p-7 space-y-5 flex-1 flex flex-col justify-between">
-                <div className="space-y-4">
+              <form onSubmit={handleVerifyOtpSubmit} className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
+                <div className="space-y-3">
                   {/* 6 Digit Input Boxes */}
                   <div className="space-y-2">
                     <label className="block text-xs font-semibold text-slate-300 text-center">
@@ -505,6 +547,13 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     >
                       {resendCountdown > 0 ? `Kirim Ulang (${resendCountdown}s)` : 'Kirim Ulang Sekarang'}
                     </button>
+                  </div>
+
+                  {/* Tips tautan email */}
+                  <div className="bg-slate-950/60 rounded-xl p-2.5 border border-teal-500/20 text-center">
+                    <p className="text-[11px] text-teal-200/90 leading-tight">
+                      ✉️ <strong>Tips Praktis:</strong> Anda juga bisa langsung klik tautan <em>&quot;Log In&quot;</em> di inbox email Anda untuk masuk otomatis!
+                    </p>
                   </div>
                 </div>
 
@@ -575,13 +624,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </div>
         </div>
 
-        {/* Tengah: Tombol Unduh ZIP Proyek untuk Pengujian di VS Code */}
+        {/* Tengah: Tombol Unduh ZIP Proyek untuk Pengujian di VS Code (Selalu Terkini) */}
         <div className="flex items-center justify-center">
           <a
-            href="/FinBiz-Project-Source.zip"
+            href={`/FinBiz-Project-Source.zip?v=${Date.now()}`}
             download="FinBiz-Project-Source.zip"
+            onClick={() => showToast('📦 Mengunduh ZIP Proyek FinBiz terbaru (Lengkap & Terkini)')}
             className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-slate-900/60 hover:bg-slate-800/85 backdrop-blur-xl border border-teal-500/40 hover:border-teal-400 text-teal-300 hover:text-teal-200 text-xs font-semibold shadow-lg hover:shadow-teal-950/60 transition-all hover:-translate-y-0.5 active:scale-95 cursor-pointer"
-            title="Unduh seluruh source code dalam bentuk file ZIP untuk diuji di VS Code"
+            title="Unduh seluruh source code dalam bentuk file ZIP untuk diuji di VS Code (Selalu Terkini)"
           >
             <Download className="w-3.5 h-3.5 text-teal-400" />
             <span className="hidden sm:inline">Unduh ZIP Proyek (VS Code)</span>

@@ -18,6 +18,7 @@ import { Landing3DView } from './components/auth/Landing3DView';
 import { TransactionModal } from './components/modals/TransactionModal';
 import { ThreeInteractiveBackground } from './components/common/ThreeInteractiveBackground';
 import { CheckCircle2, LogOut } from 'lucide-react';
+import { supabase } from './lib/supabase';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
@@ -25,6 +26,40 @@ export default function App() {
 
   // Master Kontrol Penuh Atas Semua Fitur (Feature Flags State)
   const [featureControls, setFeatureControls] = useState<FeatureControls>(defaultFeatureControls);
+
+  // Sinkronisasi Sesi Supabase Auth (Otomatis masuk saat klik tautan di email atau sudah login)
+  useEffect(() => {
+    if (!supabase) return;
+
+    // 1. Cek sesi yang ada saat aplikasi dibuka
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUserProfile((prev) => ({
+          ...prev,
+          isLoggedIn: true,
+          email: session.user.email || prev.email,
+          name: session.user.user_metadata?.full_name || prev.name,
+        }));
+      }
+    });
+
+    // 2. Dengarkan event login (seperti saat user mengklik link dari email)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+        setUserProfile((prev) => ({
+          ...prev,
+          isLoggedIn: true,
+          email: session.user.email || prev.email,
+          name: session.user.user_metadata?.full_name || prev.name,
+        }));
+        handleTriggerSavedPopup(`Selamat datang! Berhasil login via Supabase (${session.user.email})`);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Jika modul yang sedang dibuka dinonaktifkan di Pengaturan, otomatis alihkan ke Dashboard
   useEffect(() => {
@@ -48,27 +83,27 @@ export default function App() {
   // Modal catat transaksi baru
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState<boolean>(false);
 
-  // Data profil pengguna & usaha lengkap
+  // Data profil pengguna & usaha lengkap (semua isian kolom kosong bersih 100%)
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Arman Pratama',
-    businessName: 'CV Niaga Mandiri Utama',
-    businessType: 'Retail & Grosir',
+    name: '',
+    businessName: '',
+    businessType: '',
     currency: 'IDR (Rp)',
-    email: 'armandmtg@gmail.com',
+    email: '',
     isLoggedIn: false,
     googleLinked: false,
     googleEmail: undefined,
-    birthPlace: 'Bandung',
-    birthDate: '1992-06-15',
-    gender: 'Laki-laki',
-    address: 'Jl. Surya Kencana No. 45, RT 02 / RW 04, Kel. Ciumbuleuit',
-    city: 'Bandung',
-    province: 'Jawa Barat',
-    postalCode: '40132',
-    phone: '0812-3456-7890',
-    roleTitle: 'Pemilik Usaha (Founder)',
-    nik: '3273011506920003',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80',
+    birthPlace: '',
+    birthDate: '',
+    gender: '' as any,
+    address: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    phone: '',
+    roleTitle: '',
+    nik: '',
+    avatarUrl: '',
   });
 
   // Data transaksi & pagu anggaran
@@ -115,10 +150,20 @@ export default function App() {
   };
 
   // Handler Keluar dari Akun (Logout) dengan Popup Push Tunggal & Elegan
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Supabase signOut error:', err);
+      }
+    }
     setUserProfile((prev) => ({
       ...prev,
       isLoggedIn: false,
+      email: '',
+      googleLinked: false,
+      googleEmail: undefined,
     }));
     setShowLogoutPushPopup(true);
     setAuthStep(1);

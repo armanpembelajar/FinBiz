@@ -37,11 +37,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onProceedToAkun,
 }) => {
   const [authMode, setAuthMode] = useState<'masuk' | 'daftar'>('masuk');
-  const [emailInput, setEmailInput] = useState(userProfile.email || 'pemilik@niagamandiri.id');
-  const [passwordInput, setPasswordInput] = useState('••••••••••••');
-  const [nameInput, setNameInput] = useState(userProfile.name || 'Arman Pratama');
-  const [businessNameInput, setBusinessNameInput] = useState(userProfile.businessName || 'CV Niaga Mandiri Utama');
-  const [businessTypeInput, setBusinessTypeInput] = useState(userProfile.businessType || 'Retail & Grosir');
+  const [emailInput, setEmailInput] = useState(userProfile.email || '');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [nameInput, setNameInput] = useState(userProfile.name || '');
+  const [businessNameInput, setBusinessNameInput] = useState(userProfile.businessName || '');
+  const [businessTypeInput, setBusinessTypeInput] = useState(userProfile.businessType || '');
   const [currencyInput, setCurrencyInput] = useState(userProfile.currency || 'IDR (Rp)');
   const [isLinkingGoogle, setIsLinkingGoogle] = useState(false);
   const [googleSuccessAlert, setGoogleSuccessAlert] = useState<string | null>(null);
@@ -67,12 +67,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setIsLinkingGoogle(true);
       setTimeout(() => {
         setIsLinkingGoogle(false);
+        const linkedEmail = emailInput || userProfile.email || '';
         onUpdateProfile({
           googleLinked: true,
-          googleEmail: 'armandmtg@gmail.com',
-          avatarUrl: userProfile.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80',
+          googleEmail: linkedEmail,
+          avatarUrl: userProfile.avatarUrl || '',
         });
-        setGoogleSuccessAlert('Berhasil menautkan akun Google: armandmtg@gmail.com');
+        setGoogleSuccessAlert(linkedEmail ? `Berhasil menautkan akun Google: ${linkedEmail}` : 'Berhasil menautkan akun Google');
         setTimeout(() => setGoogleSuccessAlert(null), 3500);
       }, 700);
     }
@@ -278,7 +279,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       required
                       value={businessNameInput}
                       onChange={(e) => setBusinessNameInput(e.target.value)}
-                      placeholder="Contoh: CV Niaga Mandiri Utama"
+                      placeholder="Contoh: Toko Maju Jaya / Nama Usaha"
                       className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
@@ -338,7 +339,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <h4 className="text-xs font-semibold text-slate-900">Penautan Akun Google (Opsional)</h4>
                       <p className="text-[11px] text-slate-500">
                         {userProfile.googleLinked 
-                          ? `Tertaut: ${userProfile.googleEmail || 'armandmtg@gmail.com'}`
+                          ? `Tertaut: ${userProfile.googleEmail || userProfile.email || 'Akun Google'}`
                           : 'Bisa ditautkan sekarang atau nanti di Fitur Akun'}
                       </p>
                     </div>
