@@ -332,12 +332,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   {authMode === 'daftar' && (
                     <>
                       <div className="space-y-1.5 animate-in fade-in duration-200">
-                        <label className="block text-xs font-semibold text-slate-300">
+                        <label htmlFor="landing-name" className="block text-xs font-semibold text-slate-300">
                           Nama Lengkap Pemilik / Pengelola <span className="text-rose-400">*</span>
                         </label>
                         <div className="relative">
                           <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                           <input
+                            id="landing-name"
+                            name="name"
                             type="text"
                             required
                             autoComplete="off"
@@ -350,12 +352,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       </div>
 
                       <div className="space-y-1.5 animate-in fade-in duration-200">
-                        <label className="block text-xs font-semibold text-slate-300">
+                        <label htmlFor="landing-business-name" className="block text-xs font-semibold text-slate-300">
                           Nama Usaha / Lembaga / Sekolah <span className="text-rose-400">*</span>
                         </label>
                         <div className="relative">
                           <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                           <input
+                            id="landing-business-name"
+                            name="businessName"
                             type="text"
                             required
                             autoComplete="off"
@@ -370,12 +374,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   )}
 
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-slate-300">
+                    <label htmlFor="landing-email" className="block text-xs font-semibold text-slate-300">
                       Email Akun Bisnis / Pribadi <span className="text-rose-400">*</span>
                     </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                       <input
+                        id="landing-email"
+                        name="email"
                         type="email"
                         required
                         autoComplete="off"
@@ -389,7 +395,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="block text-xs font-semibold text-slate-300">
+                      <label htmlFor="landing-password" className="block text-xs font-semibold text-slate-300">
                         Kata Sandi <span className="text-rose-400">*</span>
                       </label>
                       <button
@@ -413,6 +419,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     <div className="relative">
                       <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
                       <input
+                        id="landing-password"
+                        name="password"
                         type={showPassword ? 'text' : 'password'}
                         required
                         autoComplete="off"
@@ -547,7 +555,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 <div className="space-y-4">
                   <div className="space-y-2" onPaste={handleOtpPaste}>
                     <div className="flex items-center justify-between px-1">
-                      <label className="block text-xs font-semibold text-slate-300">
+                      <label htmlFor="otp-digit-0" className="block text-xs font-semibold text-slate-300">
                         Masukkan 6 Digit Kode:
                       </label>
                       <span className="text-[10px] text-slate-400">
@@ -559,6 +567,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       {otpDigits.map((digit, idx) => (
                         <input
                           key={idx}
+                          id={`otp-digit-${idx}`}
+                          name={`otpDigit${idx}`}
                           ref={(el) => {
                             otpInputsRef.current[idx] = el;
                           }}
