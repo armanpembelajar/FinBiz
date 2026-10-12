@@ -115,7 +115,7 @@ export default function App() {
     setActiveTab('akun');
   };
 
-  // Handler Keluar dari Akun (Logout) dengan Popup Push Tunggal & Elegan
+  // Handler Keluar dari Akun (Logout)
   const handleLogout = () => {
     setUserProfile((prev) => ({
       ...prev,
@@ -129,7 +129,6 @@ export default function App() {
   const handleAddTransaction = (newTx: Transaction) => {
     setTransactions((prev) => [newTx, ...prev]);
 
-    // Update realisasi anggaran jika pos pengeluaran sesuai
     if (newTx.type === 'keluar') {
       setBudgetItems((prev) =>
         prev.map((b) => {
@@ -148,7 +147,7 @@ export default function App() {
     handleTriggerSavedPopup(`Pos pagu anggaran "${newItem.category}" berhasil ditambahkan.`);
   };
 
-  // JIKA PENGGUNA BELUM LOGIN: KHUSUS FITUR TAMPILAN AWAL 3D SAJA
+  // JIKA PENGGUNA BELUM LOGIN: TAMPILAN AWAL 3D SAJA
   if (!userProfile.isLoggedIn) {
     return (
       <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-teal-500 selection:text-white">
