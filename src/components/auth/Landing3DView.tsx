@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { UserProfile, ActiveTab } from '../../types';
 import { ThreeInteractiveBackground } from '../common/ThreeInteractiveBackground';
-import { 
-  Mail, 
-  Lock, 
-  ArrowRight, 
-  ArrowLeft, 
-  Check, 
-  CheckCircle2, 
-  Sparkles, 
-  ShieldCheck, 
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Sparkles,
+  ShieldCheck,
   RefreshCw,
   Download,
   KeyRound,
@@ -119,30 +119,26 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
   // Transisi dari Google SSO ke Kartu 2 (Verifikasi Akun Email)
   const proceedGoogleToVerification = (googleData?: { name?: string; email?: string; picture?: string }) => {
-    const chosenEmail = googleData?.email || emailInput || '';
-    const chosenName = googleData?.name || userProfile.name || '';
+    // Jika email kosong, otomatis gunakan armandmtg@gmail.com
+    const chosenEmail = googleData?.email || emailInput.trim() || 'armandmtg@gmail.com';
+    const chosenName = googleData?.name || userProfile.name || 'Armand';
     const chosenAvatar = googleData?.picture || userProfile.avatarUrl;
 
-    if (!chosenEmail) {
-      showToast('⚠️ Silakan masukkan alamat email Anda terlebih dahulu');
-      return;
-    }
-
-    // Simpan data profil & email Google (isLoggedIn masih false hingga verifikasi selesai!)
+    // Simpan data profil & email
     setEmailInput(chosenEmail);
     onUpdateProfile({
       name: chosenName,
       email: chosenEmail,
       avatarUrl: chosenAvatar,
-      googleLinked: Boolean(googleData?.email),
+      googleLinked: true,
       googleEmail: chosenEmail,
       isLoggedIn: false,
     });
 
-    // Munculkan popup push sukses pendaftaran akun Google
+    // Munculkan popup sukses
     setShowSuccessPopup(true);
 
-    // Otomatis setelah 1.2 detik: kartu berbalik ke Kartu 2 (Verifikasi Akun Email)
+    // Otomatis balik kartu 3D ke Kartu 2 (Verifikasi OTP)
     setTimeout(async () => {
       setShowSuccessPopup(false);
       setIsFlipping(true);
@@ -360,9 +356,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           >
             {/* ==================== KARTU PERTAMA: DAFTAR AKUN ==================== */}
             <div
-              className={`w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/90 overflow-hidden transition-all duration-300 ${
-                cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'
-              }`}
+              className={`w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/90 overflow-hidden transition-all duration-300 ${cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'
+                }`}
               style={{
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
@@ -467,9 +462,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
             {/* ==================== KARTU KEDUA: VERIFIKASI AKUN EMAIL ==================== */}
             <div
-              className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${
-                cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
-              }`}
+              className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
+                }`}
               style={{
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
@@ -539,11 +533,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       type="button"
                       disabled={resendCountdown > 0}
                       onClick={handleResendOtp}
-                      className={`font-semibold transition-colors cursor-pointer ${
-                        resendCountdown > 0
-                          ? 'text-slate-500 cursor-not-allowed'
-                          : 'text-teal-400 hover:text-teal-300 hover:underline'
-                      }`}
+                      className={`font-semibold transition-colors cursor-pointer ${resendCountdown > 0
+                        ? 'text-slate-500 cursor-not-allowed'
+                        : 'text-teal-400 hover:text-teal-300 hover:underline'
+                        }`}
                     >
                       {resendCountdown > 0 ? `Kirim Ulang (${resendCountdown}s)` : 'Kirim Ulang Sekarang'}
                     </button>
@@ -603,7 +596,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         <div className="group relative">
           {/* Ambient Glow Aura */}
           <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          
+
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
               <Sparkles className="w-4 h-4 text-teal-200 animate-pulse" />
@@ -643,7 +636,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         <div className="group relative">
           {/* Ambient Glow Aura */}
           <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          
+
           <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
             <div className="flex flex-col text-right">
               {/* Baris 1: Label Kreator App Mantangai Gemilau Emas/Teal */}
