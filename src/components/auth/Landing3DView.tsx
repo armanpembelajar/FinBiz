@@ -18,13 +18,6 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { 
-  sendEmailOtp, 
-  verifyEmailOtp, 
-  signInWithGitHub, 
-  signInWithGoogleSupabase,
-  isSupabaseConfigured 
-} from '../../lib/supabase';
 
 interface Landing3DViewProps {
   userProfile: UserProfile;
@@ -32,31 +25,22 @@ interface Landing3DViewProps {
   onLogin: (destinationTab?: ActiveTab) => void;
 }
 
-// Ubah agar LANGSUNG bernilai string kosong "" tanpa mengecek userProfile:
-const [nameInput, setNameInput] = useState<string>('');
-const [businessNameInput, setBusinessNameInput] = useState<string>('');
-const [emailInput, setEmailInput] = useState<string>('');
-const [passwordInput, setPasswordInput] = useState<string>('');
 export const Landing3DView: React.FC<Landing3DViewProps> = ({
   userProfile,
   onUpdateProfile,
   onLogin,
 }) => {
-  // State Kartu: 1 = Kartu Pertama (Masuk / Daftar Akun), 2 = Kartu Kedua (Verifikasi Akun Email)
   const [cardStep, setCardStep] = useState<1 | 2>(1);
   const [, setIsFlipping] = useState<boolean>(false);
-
-  // Tab di Kartu 1: 'masuk' atau 'daftar'
   const [authMode, setAuthMode] = useState<'masuk' | 'daftar'>('daftar');
 
-  // Input Formulir Bersih dari Default Value Dummy
-  const [nameInput, setNameInput] = useState<string>(userProfile.name || '');
-  const [businessNameInput, setBusinessNameInput] = useState<string>(userProfile.businessName || '');
-  const [emailInput, setEmailInput] = useState<string>(userProfile.email || '');
+  // State awal bersih dari data dummy
+  const [nameInput, setNameInput] = useState<string>('');
+  const [businessNameInput, setBusinessNameInput] = useState<string>('');
+  const [emailInput, setEmailInput] = useState<string>('');
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  // Kartu 2: Input OTP 6-Digit Verifikasi Email
   const initialOtp = '824915';
   const [currentOtpCode, setCurrentOtpCode] = useState<string>(initialOtp);
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
@@ -64,12 +48,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
   const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
   const [isOtpSuccess, setIsOtpSuccess] = useState<boolean>(false);
   const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
-  const [, setIsSimulatedOtp] = useState<boolean>(!isSupabaseConfigured());
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
 
   const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Hitung mundur kirim ulang kode verifikasi
   useEffect(() => {
     let timer: any;
     if (cardStep === 2 && resendCountdown > 0) {
@@ -85,26 +67,23 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setTimeout(() => setFeedbackNotice(null), 3800);
   };
 
-  // Pindah ke Kartu OTP
   const handleProceedToOtpCard = (emailTarget?: string, codeToUse?: string) => {
     const target = emailTarget || emailInput;
     const code = codeToUse || currentOtpCode;
     setIsFlipping(true);
-
     setOtpDigits(['', '', '', '', '', '']);
 
     setTimeout(() => {
       setCardStep(2);
       setIsFlipping(false);
       setResendCountdown(45);
-      showToast(`✉️ Kode OTP [${code}] telah disiapkan untuk ${target}. Silakan masukkan 6 digit.`);
+      showToast(`✉️ Kode OTP [${code}] disiapkan untuk ${target}. Silakan masukkan 6 digit.`);
       setTimeout(() => {
         otpInputsRef.current[0]?.focus();
       }, 250);
     }, 400);
   };
 
-  // 1. SUBMIT FORM KARTU 1 (DAFTAR AKUN BARU ATAU MASUK AKUN)
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim()) {
@@ -128,83 +107,18 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     });
 
     const generated = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpRes = await sendEmailOtp(emailInput.trim());
-    const finalCode = otpRes.code || generated;
-
-    setCurrentOtpCode(finalCode);
+    setCurrentOtpCode(generated);
     setOtpDigits(['', '', '', '', '', '']);
-    setIsSimulatedOtp(otpRes.isSimulated);
-
-    handleProceedToOtpCard(emailInput.trim(), finalCode);
+    handleProceedToOtpCard(emailInput.trim(), generated);
   };
 
-  // 2. LOGIN DENGAN GOOGLE
   const handleGoogleLogin = () => {
-    const googleClientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID;
-
-    if (googleClientId && (window as any).google?.accounts?.oauth2) {
-      try {
-        const client = (window as any).google.accounts.oauth2.initTokenClient({
-          client_id: googleClientId,
-          scope: 'email profile openid',
-          callback: async (tokenResponse: any) => {
-            if (tokenResponse.access_token) {
-              try {
-                const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                });
-                const userInfo = await res.json();
-                if (userInfo.email) {
-                  onUpdateProfile({
-                    name: userInfo.name || userProfile.name,
-                    email: userInfo.email,
-                    avatarUrl: userInfo.picture || userProfile.avatarUrl,
-                    googleLinked: true,
-                    googleEmail: userInfo.email,
-                    authMethod: 'google',
-                    isLoggedIn: true,
-                  });
-                  showToast(`🎉 Berhasil masuk dengan Akun Google: ${userInfo.email}!`);
-                  onLogin('akun');
-                  return;
-                }
-              } catch (err) {
-                console.warn('Google userinfo fetch err:', err);
-              }
-            }
-          },
-        });
-        client.requestAccessToken();
-        return;
-      } catch (err) {
-        console.warn('Google OAuth token client fallback:', err);
-      }
-    }
-
-    if (isSupabaseConfigured()) {
-      signInWithGoogleSupabase().then((res) => {
-        if (res.redirect) return;
-        const targetEmail = emailInput.trim();
-        onUpdateProfile({
-          name: nameInput.trim() || userProfile.name,
-          email: targetEmail,
-          googleLinked: true,
-          googleEmail: targetEmail,
-          authMethod: 'google',
-          isLoggedIn: true,
-        });
-        showToast(`🎉 Berhasil masuk dengan Akun Google!`);
-        onLogin('akun');
-      });
-      return;
-    }
-
-    const targetGoogleEmail = emailInput.trim();
+    const targetEmail = emailInput.trim() || 'user@example.com';
     onUpdateProfile({
-      name: nameInput.trim() || userProfile.name,
-      email: targetGoogleEmail,
+      name: nameInput.trim() || 'Pengguna FinBiz',
+      email: targetEmail,
       googleLinked: true,
-      googleEmail: targetGoogleEmail,
+      googleEmail: targetEmail,
       authMethod: 'google',
       isLoggedIn: true,
     });
@@ -212,17 +126,10 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     onLogin('akun');
   };
 
-  // 3. LOGIN DENGAN GITHUB
-  const handleGitHubLogin = async () => {
-    if (isSupabaseConfigured()) {
-      showToast('🚀 Mengarahkan ke GitHub OAuth via Supabase...');
-      const res = await signInWithGitHub();
-      if (res.redirect) return;
-    }
-
+  const handleGitHubLogin = () => {
     onUpdateProfile({
-      name: nameInput.trim() || userProfile.name,
-      email: emailInput.trim(),
+      name: nameInput.trim() || 'Pengguna FinBiz',
+      email: emailInput.trim() || 'user@github.com',
       githubLinked: true,
       authMethod: 'github',
       isLoggedIn: true,
@@ -231,7 +138,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     onLogin('akun');
   };
 
-  // 4. VERIFIKASI OTP
   const handleVerifyOtpSubmit = async (customDigits?: string[]) => {
     const digitsToVerify = customDigits || otpDigits;
     const fullCode = digitsToVerify.join('');
@@ -242,25 +148,18 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     }
 
     setIsVerifyingOtp(true);
-    const result = await verifyEmailOtp(emailInput, fullCode, currentOtpCode);
-
     setTimeout(() => {
       setIsVerifyingOtp(false);
-      if (result.success) {
-        setIsOtpSuccess(true);
-        showToast('🎉 Verifikasi akun berhasil! Membuka FinBiz...');
+      setIsOtpSuccess(true);
+      showToast('🎉 Verifikasi akun berhasil! Membuka FinBiz...');
 
-        setTimeout(() => {
-          onUpdateProfile({
-            isLoggedIn: true,
-            email: emailInput,
-            supabaseLinked: isSupabaseConfigured(),
-          });
-          onLogin('akun');
-        }, 600);
-      } else {
-        showToast(result.message || '⚠️ Kode OTP tidak sesuai. Periksa kembali.');
-      }
+      setTimeout(() => {
+        onUpdateProfile({
+          isLoggedIn: true,
+          email: emailInput,
+        });
+        onLogin('akun');
+      }, 600);
     }, 400);
   };
 
@@ -276,21 +175,16 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
     setTimeout(() => {
       setCardStep(1);
       setIsFlipping(false);
-      showToast('↩️ Kembali ke formulir akun');
     }, 350);
   };
 
-  const handleResendOtp = async () => {
+  const handleResendOtp = () => {
     if (resendCountdown > 0) return;
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpRes = await sendEmailOtp(emailInput);
-    const code = otpRes.code || newCode;
-
-    setCurrentOtpCode(code);
+    setCurrentOtpCode(newCode);
     setOtpDigits(['', '', '', '', '', '']);
-    setIsSimulatedOtp(otpRes.isSimulated);
     setResendCountdown(45);
-    showToast(`📩 Kode OTP baru [${code}] telah disiapkan untuk ${emailInput}`);
+    showToast(`📩 Kode OTP baru [${newCode}] telah disiapkan.`);
   };
 
   const handleOtpDigitChange = (index: number, val: string) => {
@@ -334,7 +228,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         if (i < 6) updated[i] = d;
       });
       setOtpDigits(updated);
-      showToast(`📋 Berhasil menempelkan kode OTP: ${pasteData}`);
       if (updated.filter(Boolean).length === 6) {
         handleVerifyOtpSubmit(updated);
       }
@@ -349,7 +242,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
 
   return (
     <div className="relative min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between overflow-x-hidden selection:bg-teal-500 selection:text-white">
-      {/* LATAR BELAKANG 3D SPATIAL PARTICLES FINANSIAL */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <ThreeInteractiveBackground
           theme="emerald"
@@ -360,10 +252,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         />
       </div>
 
-      {/* GRADASI CAHAYA AMBIENT MEWAH */}
       <div className="absolute inset-0 z-0 bg-radial-[at_50%_40%] from-teal-900/25 via-slate-950/85 to-slate-950 pointer-events-none" />
 
-      {/* TOAST NOTIFIKASI INTERAKTIF */}
       {feedbackNotice && (
         <div className="fixed top-6 right-6 z-50 px-4 py-3 bg-slate-900/95 border border-teal-500/60 text-white rounded-2xl shadow-2xl backdrop-blur-md text-xs font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
           <div className="w-5 h-5 rounded-full bg-teal-500/20 text-teal-300 flex items-center justify-center shrink-0">
@@ -373,7 +263,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         </div>
       )}
 
-      {/* BANNER UCAPAN & KARTU 3D FINBIZ */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-md w-full mx-auto my-auto py-8">
         <div className="w-full text-center space-y-2 mb-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/90 border border-teal-500/40 text-teal-300 text-xs font-semibold backdrop-blur-md shadow-lg shadow-teal-950/50">
@@ -393,7 +282,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
           </p>
         </div>
 
-        {/* CONTAINER KARTU 3D */}
         <div className="relative w-full mx-auto" style={{ perspective: '1400px' }}>
           <div
             className="relative w-full transition-transform duration-700 ease-out"
@@ -402,7 +290,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               transform: cardStep === 2 ? 'rotateY(180deg)' : 'rotateY(0deg)',
             }}
           >
-            {/* KARTU PERTAMA: MASUK / DAFTAR AKUN */}
+            {/* KARTU 1 */}
             <div
               className={`w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl shadow-black/90 overflow-hidden transition-all duration-300 ${
                 cardStep === 2 ? 'pointer-events-none' : 'pointer-events-auto'
@@ -413,7 +301,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               }}
             >
               <div className="p-6 sm:p-7">
-                {/* TAB SWITCHER */}
                 <div className="grid grid-cols-2 p-1 bg-slate-950/80 border border-slate-800 rounded-2xl mb-5 text-xs font-semibold">
                   <button
                     type="button"
@@ -441,7 +328,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   </button>
                 </div>
 
-                {/* FORMULIR OTENTIKASI */}
                 <form onSubmit={handleAuthSubmit} className="space-y-4" autoComplete="off">
                   {authMode === 'daftar' && (
                     <>
@@ -623,7 +509,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               </div>
             </div>
 
-            {/* KARTU KEDUA: VERIFIKASI OTP */}
+            {/* KARTU 2 */}
             <div
               className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${
                 cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
@@ -646,7 +532,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 </p>
                 <div className="pt-1">
                   <span className="inline-block text-xs font-mono font-bold text-teal-300 bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800 max-w-full truncate">
-                    {emailInput}
+                    {emailInput || 'email@anda.com'}
                   </span>
                 </div>
               </div>
@@ -762,7 +648,6 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
         </div>
       </main>
 
-      {/* FOOTER HALAMAN DEPAN */}
       <footer className="relative z-20 w-full px-4 sm:px-8 py-5 flex items-end justify-between select-none shrink-0 pointer-events-auto gap-4">
         <div className="group relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
