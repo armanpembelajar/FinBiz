@@ -438,7 +438,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
               </form>
             </div>
 
-            {/* ==================== KARTU KEDUA: VERIFIKASI AKUN EMAIL ==================== */}
+           {/* ==================== KARTU KEDUA: VERIFIKASI AKUN EMAIL DENGAN OTP MASUK ==================== */}
             <div
               className={`absolute inset-0 w-full bg-slate-900/95 backdrop-blur-2xl border border-teal-500/40 rounded-3xl shadow-2xl shadow-teal-950/70 overflow-hidden flex flex-col justify-between transition-all duration-300 ${
                 cardStep === 2 ? 'pointer-events-auto' : 'pointer-events-none'
@@ -449,7 +449,8 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                 transform: 'rotateY(180deg)',
               }}
             >
-              <div className="p-6 pb-2 text-center space-y-1">
+              {/* Header Kartu Kedua */}
+              <div className="p-5 pb-2 text-center space-y-1">
                 <div className="w-10 h-10 mx-auto rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center mb-1">
                   <Mail className="w-5 h-5" />
                 </div>
@@ -457,20 +458,54 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   Verifikasi Akun Email
                 </h3>
                 <p className="text-xs text-slate-300">
-                  Kode 6-digit verifikasi telah dikirim ke:
+                  Kode 6-digit verifikasi telah disiapkan untuk:
                 </p>
                 <p className="text-xs font-mono font-bold text-teal-300 truncate px-2">
                   {emailInput}
                 </p>
               </div>
 
-              <form onSubmit={handleVerifyOtpSubmit} className="p-6 sm:p-7 space-y-5 flex-1 flex flex-col justify-between">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-slate-300 text-center">
-                      Masukkan 6 Digit Kode:
-                    </label>
-                    <div className="flex items-center justify-center gap-2">
+              {/* Form Verifikasi Email dengan Akses OTP Masuk & Paste */}
+              <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtpSubmit(); }} className="p-5 sm:p-6 space-y-4 flex-1 flex flex-col justify-between">
+                <div className="space-y-3">
+                  {/* Info Box Notifikasi Buka Email */}
+                  <div className="p-3 bg-teal-950/60 border border-teal-500/30 rounded-xl text-[11px] text-teal-200 flex items-center justify-between gap-2 shadow-inner">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="w-4 h-4 text-teal-400 shrink-0" />
+                      <span className="truncate">Kode OTP Email: <strong className="font-mono text-teal-300 font-bold">{currentOtpCode}</strong></span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const digits = currentOtpCode.slice(0, 6).split('');
+                        setOtpDigits(digits);
+                        showToast(`📋 Kode OTP ${currentOtpCode} telah diisikan otomatis!`);
+                        handleVerifyOtpSubmit(digits);
+                      }}
+                      className="px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-[10px] font-bold shrink-0 transition-colors shadow-xs cursor-pointer active:scale-95"
+                    >
+                      Isi Otomatis
+                    </button>
+                  </div>
+
+                  {/* Status Notifikasi Cek Email Tanpa Menampilkan Kode */}
+                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl text-[11px] text-slate-300 flex items-center gap-2.5 shadow-inner">
+                    <Mail className="w-4 h-4 text-teal-400 shrink-0" />
+                    <span>Silakan periksa kotak masuk / spam di <strong className="text-teal-300 font-medium">{emailInput}</strong></span>
+                  </div>
+
+                  {/* 6 Digit Input Boxes dengan Support Paste Clipboard */}
+                  <div className="space-y-2" onPaste={handleOtpPaste}>
+                    <div className="flex items-center justify-between px-1">
+                      <label className="block text-xs font-semibold text-slate-300">
+                        Masukkan 6 Digit:
+                      </label>
+                      <span className="text-[10px] text-teal-400 font-medium">
+                        Bisa Paste / Tempel Kode
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
                       {otpDigits.map((digit, idx) => (
                         <input
                           key={idx}
@@ -481,13 +516,14 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                           value={digit}
                           onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                          className="w-10 h-12 bg-slate-950/90 border-2 border-slate-700 focus:border-teal-400 rounded-xl text-center text-lg font-bold font-mono text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-md"
+                          className="w-10 sm:w-11 h-12 bg-slate-950/90 border-2 border-slate-700 focus:border-teal-400 rounded-xl text-center text-lg font-bold font-mono text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-md"
                         />
                       ))}
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+                  {/* Resend Link */}
+                  <div className="flex items-center justify-between text-xs text-slate-400 px-1 pt-1">
                     <span>Belum terima kode?</span>
                     <button
                       type="button"
@@ -496,29 +532,25 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                       className={`font-semibold transition-colors ${
                         resendCountdown > 0
                           ? 'text-slate-500 cursor-not-allowed'
-                          : 'text-teal-400 hover:text-teal-300 hover:underline'
+                          : 'text-teal-400 hover:text-teal-300 hover:underline cursor-pointer'
                       }`}
                     >
                       {resendCountdown > 0 ? `Kirim Ulang (${resendCountdown}s)` : 'Kirim Ulang Sekarang'}
                     </button>
                   </div>
-
-                  <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl text-[11px] text-slate-300 flex items-center gap-2.5 shadow-inner">
-                    <Mail className="w-4 h-4 text-teal-400 shrink-0" />
-                    <span>Silakan periksa kotak masuk / spam di <strong className="text-teal-300 font-medium">{emailInput}</strong></span>
-                  </div>
                 </div>
 
-                <div className="space-y-2 pt-1">
+                {/* Tombol Aksi Verifikasi */}
+                <div className="space-y-2 pt-2">
                   <button
                     type="submit"
                     disabled={isVerifyingOtp}
-                    className="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-500 disabled:opacity-75 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/50 transition-all active:scale-[0.99]"
+                    className="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-500 disabled:opacity-75 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-900/50 transition-all active:scale-[0.99] cursor-pointer"
                   >
                     {isVerifyingOtp ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span>Memverifikasi Kode...</span>
+                        <span>Memverifikasi Kode OTP...</span>
                       </>
                     ) : isOtpSuccess ? (
                       <>
@@ -528,7 +560,7 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                     ) : (
                       <>
                         <Check className="w-4 h-4 text-teal-200" />
-                        <span>Verifikasi Akun Email</span>
+                        <span>Verifikasi &amp; Buka Akun</span>
                       </>
                     )}
                   </button>
@@ -536,60 +568,11 @@ export const Landing3DView: React.FC<Landing3DViewProps> = ({
                   <button
                     type="button"
                     onClick={handleBackToCard1}
-                    className="w-full py-2.5 px-4 text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2 px-4 text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Kembali ke Pendaftaran</span>
+                    <span>Kembali ke Pilihan Akun</span>
                   </button>
                 </div>
               </form>
             </div>
-          </div>
-        </div>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="relative z-20 w-full px-4 sm:px-8 py-5 flex items-end justify-between select-none shrink-0 pointer-events-auto gap-4">
-        <div className="group relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/30 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-teal-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(45,212,191,0.2)] hover:border-teal-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(45,212,191,0.35)] transition-all duration-300 hover:-translate-y-0.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-teal-400/30 to-emerald-600/30 border border-teal-300/50 flex items-center justify-center text-teal-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
-              <Sparkles className="w-4 h-4 text-teal-200 animate-pulse" />
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-teal-100 via-emerald-300 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(20,184,166,0.6)]">
-                FinBiz Keuangan
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
-                <span className="text-[10px] sm:text-xs text-teal-300/90 font-mono font-semibold tracking-wider drop-shadow-sm">
-                  Versi Sistem v3.1 Enterprise
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="group relative">
-          <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-teal-400/30 rounded-2xl blur-md opacity-75 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-          <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-900/50 backdrop-blur-xl border border-emerald-400/40 shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25),0_0_20px_rgba(16,185,129,0.2)] hover:border-emerald-300/70 hover:shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.35),0_0_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-0.5">
-            <div className="flex flex-col text-right">
-              <span className="text-xs sm:text-sm font-extrabold tracking-wide bg-gradient-to-r from-amber-100 via-emerald-200 to-teal-200 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)]">
-                Kreator App Mantangai
-              </span>
-              <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                <span className="text-[10px] sm:text-xs text-emerald-300/90 font-semibold tracking-wide drop-shadow-sm">
-                  Uluh Lewu Dayak
-                </span>
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-            </div>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400/20 via-emerald-500/30 to-teal-600/30 border border-emerald-300/50 flex items-center justify-center text-emerald-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] shrink-0">
-              <ShieldCheck className="w-4 h-4 text-emerald-300" />
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
