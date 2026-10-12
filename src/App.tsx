@@ -49,27 +49,27 @@ export default function App() {
   // Modal catat transaksi baru
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState<boolean>(false);
 
-  // Data profil pengguna & usaha lengkap
+  // Data profil pengguna & usaha dibuat bersih/kosong dari awal (Fresh)
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    name: 'Arkas Mantangai',
-    businessName: 'SDN 1 Mantangai Tengah',
-    businessType: 'Instansi Pendidikan & Operasional Finansial',
+    name: '',
+    businessName: '',
+    businessType: 'Retail & Grosir',
     currency: 'IDR (Rp)',
-    email: 'arkas.sdn1mantangaitengah@gmail.com',
+    email: '',
     isLoggedIn: false,
     googleLinked: false,
     googleEmail: undefined,
-    birthPlace: 'Mantangai Tengah',
-    birthDate: '1990-05-10',
-    gender: 'Laki-laki',
-    address: 'Jl. Pemuda No. 12, Mantangai Tengah',
-    city: 'Kapuas',
-    province: 'Kalimantan Tengah',
-    postalCode: '73553',
-    phone: '0812-3456-7890',
-    roleTitle: 'Pengelola Anggaran & Keuangan',
-    nik: '6203011505900001',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80',
+    birthPlace: '',
+    birthDate: '',
+    gender: '',
+    address: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    phone: '',
+    roleTitle: '',
+    nik: '',
+    avatarUrl: '',
   });
 
   // Data transaksi & pagu anggaran
@@ -149,11 +149,10 @@ export default function App() {
   };
 
   // JIKA PENGGUNA BELUM LOGIN: KHUSUS FITUR TAMPILAN AWAL 3D SAJA
-  // Sistem (Sidebar, Dashboard dll) SAMA SEKALI TIDAK DITAMPILKAN sebelum login!
   if (!userProfile.isLoggedIn) {
     return (
       <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-teal-500 selection:text-white">
-        {/* POPUP PUSH: ANDA BERHASIL KELUAR (TUNGGAL & BERSIH) */}
+        {/* POPUP PUSH: ANDA BERHASIL KELUAR */}
         {showLogoutPushPopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-in fade-in duration-200">
             <div className="bg-slate-900 border-2 border-rose-500/80 text-white rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl shadow-rose-950/80 flex flex-col items-center text-center space-y-4 animate-in zoom-in-95 duration-200">
@@ -229,7 +228,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Global 3D Interactive Background Layer (Aktif jika di-toggle di Pengaturan / Kontrol Penuh) */}
+      {/* Global 3D Interactive Background Layer */}
       {featureControls.enableGlobal3DBackground && (
         <div className="fixed inset-0 pointer-events-none z-0 opacity-35 overflow-hidden">
           <ThreeInteractiveBackground
@@ -252,9 +251,8 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Main Layout Area - Tanpa Header (Semua Layar Menggunakan Banner Langsung) */}
+      {/* Main Layout Area */}
       <div className="relative z-10 flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
-        {/* Viewport Konten Utama */}
         <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
           {activeTab === 'dashboard' && (
             <DashboardView
@@ -319,7 +317,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* Dua Jendela Login & Penyettingan Profil Modal */}
+      {/* Modal Otentikasi & Modal Transaksi */}
       <AuthModal
         isOpen={isAuthModalOpen}
         step={authStep}
@@ -331,7 +329,6 @@ export default function App() {
         onProceedToAkun={handleProceedToAkun}
       />
 
-      {/* Modal Input Transaksi Cepat */}
       <TransactionModal
         isOpen={isTransactionModalOpen}
         onClose={() => setIsTransactionModalOpen(false)}

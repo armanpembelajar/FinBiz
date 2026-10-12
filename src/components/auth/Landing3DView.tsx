@@ -32,6 +32,11 @@ interface Landing3DViewProps {
   onLogin: (destinationTab?: ActiveTab) => void;
 }
 
+// Ubah agar LANGSUNG bernilai string kosong "" tanpa mengecek userProfile:
+const [nameInput, setNameInput] = useState<string>('');
+const [businessNameInput, setBusinessNameInput] = useState<string>('');
+const [emailInput, setEmailInput] = useState<string>('');
+const [passwordInput, setPasswordInput] = useState<string>('');
 export const Landing3DView: React.FC<Landing3DViewProps> = ({
   userProfile,
   onUpdateProfile,
