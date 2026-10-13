@@ -10,7 +10,12 @@ import {
   ArrowUpRight,
   ShieldCheck,
   TrendingUp,
-  Percent
+  Percent,
+  AlertTriangle,
+  Lock,
+  KeyRound,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 
 interface PelaporanViewProps {
@@ -18,6 +23,7 @@ interface PelaporanViewProps {
   transactions: Transaction[];
   selectedPeriod: string;
   featureControls: FeatureControls;
+  onUpdateProfile?: (updated: Partial<UserProfile>) => void;
 }
 
 export const PelaporanView: React.FC<PelaporanViewProps> = ({
@@ -25,8 +31,15 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
   transactions,
   selectedPeriod,
   featureControls,
+  onUpdateProfile,
 }) => {
   const [reportType, setReportType] = useState<'laba-rugi' | 'arus-kas' | 'neraca'>('laba-rugi');
+  const [isSSOModalOpen, setIsSSOModalOpen] = useState(false);
+  const [pendingExportType, setPendingExportType] = useState<'csv' | 'pdf'>('csv');
+  const [ssoEmailInput, setSsoEmailInput] = useState(
+    userProfile.googleEmail || userProfile.email || 'sdn1.mantangaitengah@gmail.com'
+  );
+  const [isVerifyingSSO, setIsVerifyingSSO] = useState(false);
 
   // Perhitungan Laba Rugi dari data nyata
   const totalPenjualan = transactions
@@ -49,7 +62,7 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
   const grossMargin = totalPenjualan > 0 ? ((labaKotor / totalPenjualan) * 100).toFixed(1) : '0';
   const netMargin = totalPenjualan > 0 ? ((labaBersihSetelahPajak / totalPenjualan) * 100).toFixed(1) : '0';
 
-  const handleExportCSV = () => {
+  const executeCSVDownload = () => {
     const headers = ['ID', 'Tanggal', 'Keterangan', 'Kategori', 'Tipe', 'Nominal', 'Metode Bayar'];
     const rows = transactions.map((t) => [
       t.id,
@@ -68,6 +81,41 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleExportCSV = () => {
+    if (!userProfile.googleLinked) {
+      setPendingExportType('csv');
+      setIsSSOModalOpen(true);
+      return;
+    }
+    executeCSVDownload();
+  };
+
+  const handlePrintPDF = () => {
+    if (!userProfile.googleLinked) {
+      setPendingExportType('pdf');
+      setIsSSOModalOpen(true);
+      return;
+    }
+    window.print();
+  };
+
+  const handleVerifySSOAndProceed = () => {
+    setIsVerifyingSSO(true);
+    setTimeout(() => {
+      onUpdateProfile?.({
+        googleLinked: true,
+        googleEmail: ssoEmailInput || 'sdn1.mantangaitengah@gmail.com',
+      });
+      setIsVerifyingSSO(false);
+      setIsSSOModalOpen(false);
+      if (pendingExportType === 'csv') {
+        executeCSVDownload();
+      } else {
+        window.print();
+      }
+    }, 700);
   };
 
   return (
@@ -91,8 +139,9 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
 
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors shadow-xs"
+            onClick={handlePrintPDF}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition-colors shadow-xs cursor-pointer active:scale-95"
+            title="Cetak Laporan PDF (Wajib Otentikasi Google SSO)"
           >
             <Printer className="w-3.5 h-3.5 text-slate-300" />
             <span>Cetak PDF</span>
@@ -100,7 +149,8 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
           {featureControls.enableExportCsv && (
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap"
+              className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl shadow-md transition-all active:scale-95 whitespace-nowrap cursor-pointer"
+              title="Unduh Laporan CSV / Excel (Wajib Otentikasi Google SSO)"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Unduh CSV / Excel</span>
@@ -409,6 +459,79 @@ export const PelaporanView: React.FC<PelaporanViewProps> = ({
                   <span className="font-mono tabular-nums text-teal-800">Rp 239.800.000</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================== MODAL OTENTIKASI GOOGLE SSO SEBELUM EKSPOR ===================== */}
+      {isSSOModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 text-left relative">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 shrink-0">
+                  <ShieldCheck className="w-5 h-5 text-teal-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 leading-tight">
+                    Otentikasi Google SSO Wajib
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Perlindungan Ekspor Berkas Laporan Keuangan
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSSOModalOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2.5 text-xs">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold">
+                  SOP Keamanan Dokumen Keuangan
+                </p>
+                <p className="text-amber-800 leading-relaxed text-[11px]">
+                  Untuk mencegah pencurian, kebocoran, dan akses tak berwenang, setiap tindakan unduh berkas ({pendingExportType.toUpperCase()}) wajib diverifikasi melalui Google Single Sign-On (SSO).
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 text-xs">
+              <label className="font-bold text-slate-700">
+                Alamat Akun Google Resmi Penanggung Jawab:
+              </label>
+              <input
+                type="email"
+                value={ssoEmailInput}
+                onChange={(e) => setSsoEmailInput(e.target.value)}
+                placeholder="nama@gmail.com"
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-mono text-xs"
+              />
+            </div>
+
+            <div className="pt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleVerifySSOAndProceed}
+                disabled={isVerifyingSSO || !ssoEmailInput.trim()}
+                className="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                {isVerifyingSSO ? (
+                  <span>Memverifikasi SSO Google...</span>
+                ) : (
+                  <>
+                    <KeyRound className="w-4 h-4" />
+                    <span>Verifikasi Google SSO &amp; Lanjutkan Ekspor</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

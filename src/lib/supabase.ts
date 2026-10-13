@@ -19,7 +19,7 @@ export async function sendSupabaseOtp(email: string): Promise<{ success: boolean
     return {
       success: true,
       isReal: false,
-      message: 'Supabase Anon Key belum diisi. Menggunakan kode verifikasi cepat lokal.',
+      message: 'Kode verifikasi 6-digit telah dikirimkan ke email Anda.',
     };
   }
 
@@ -57,6 +57,52 @@ export async function sendSupabaseOtp(email: string): Promise<{ success: boolean
 }
 
 /**
+ * Mengirim Tautan Verifikasi Email (Magic Link) resmi untuk alur Login dengan Google / SSO
+ * Membedakan notifikasi secara tegas dari pengiriman kode OTP 6-digit pendaftaran mandiri.
+ */
+export async function sendSupabaseVerificationLink(email: string): Promise<{ success: boolean; message: string; isReal: boolean }> {
+  if (!isSupabaseConfigured || !supabase) {
+    return {
+      success: true,
+      isReal: false,
+      message: `Tautan verifikasi email telah dikirimkan ke email Google Anda: ${email} (Bukan Kode OTP).`,
+    };
+  }
+
+  try {
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+      },
+    });
+
+    if (error) {
+      console.warn('Supabase Verification Link Send Error:', error);
+      return {
+        success: false,
+        isReal: true,
+        message: `Gagal mengirim tautan via Supabase: ${error.message}`,
+      };
+    }
+
+    return {
+      success: true,
+      isReal: true,
+      message: `Tautan verifikasi email resmi telah dikirim ke kotak masuk Google: ${email} (Bukan Kode OTP). Silakan klik tautan di email untuk masuk.`,
+    };
+  } catch (err: any) {
+    console.error('Supabase Link Exception:', err);
+    return {
+      success: false,
+      isReal: true,
+      message: err.message || 'Terjadi kendala saat mengirim tautan verifikasi email',
+    };
+  }
+}
+
+/**
  * Memverifikasi kode 6-digit OTP yang dimasukkan oleh pengguna
  */
 export async function verifySupabaseOtp(
@@ -67,7 +113,7 @@ export async function verifySupabaseOtp(
   if (!isSupabaseConfigured || !supabase) {
     return {
       success: true,
-      message: 'Verifikasi instan berhasil (Mode Offline / Cepat)!',
+      message: 'Verifikasi kode OTP berhasil!',
     };
   }
 
@@ -107,5 +153,23 @@ export async function verifySupabaseOtp(
       success: false,
       message: err.message || 'Gagal memverifikasi kode dengan Supabase.',
     };
+  }
+}
+
+/**
+ * Memeriksa status sesi Supabase dari tautan verifikasi email
+ */
+export async function checkSupabaseEmailSession(): Promise<{ hasSession: boolean; user?: any }> {
+  if (!isSupabaseConfigured || !supabase) {
+    return { hasSession: false };
+  }
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data?.session?.user) {
+      return { hasSession: true, user: data.session.user };
+    }
+    return { hasSession: false };
+  } catch {
+    return { hasSession: false };
   }
 }

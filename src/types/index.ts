@@ -1,4 +1,4 @@
-export type ActiveTab = 'dashboard' | 'perencanaan' | 'pelaksanaan' | 'pelaporan' | 'pengaturan' | 'akun';
+export type ActiveTab = 'dashboard' | 'perencanaan' | 'pelaksanaan' | 'pelaporan' | 'masterdata' | 'pengaturan' | 'akun';
 
 export interface UserProfile {
   name: string;
@@ -22,6 +22,10 @@ export interface UserProfile {
   phone?: string;             // Kontak Telepon / WhatsApp
   roleTitle?: string;         // Jabatan (misal: Pemilik Usaha / Direktur)
   nik?: string;               // Nomor Induk Kependudukan (NIK)
+
+  // Keamanan Profil Tambahan
+  enableAuthenticator?: boolean; // Autentikator 2FA
+  enableFingerprint?: boolean;   // Sidik Jari / Biometrik
 }
 
 export interface Transaction {
@@ -66,6 +70,7 @@ export interface FeatureControls {
   enablePerencanaan: boolean;
   enablePelaksanaan: boolean;
   enablePelaporan: boolean;
+  enableMasterData: boolean;
 
   // Dashboard
   showCashflowChart: boolean;
@@ -99,5 +104,52 @@ export interface FeatureControls {
   bg3DAutoRotate: boolean;
   bg3DElementDensity: 'minimal' | 'balanced' | 'rich';
   glassCardOpacity: number;
+}
+
+// Master Data Folder & File Architecture
+export type MasterFolderId = 'admin' | 'pengguna' | 'laporan' | 'audit' | 'backup' | 'urgen';
+
+export type FileConfidentiality = 'Restricted' | 'Confidential' | 'Top Secret' | 'Internal';
+
+export type ExportFormat = 'csv' | 'xlsx' | 'pdf' | 'json' | 'sql' | 'zip';
+
+export interface MasterFileItem {
+  id: string;
+  name: string;
+  folderId: MasterFolderId;
+  description: string;
+  size: string;
+  format: ExportFormat;
+  confidentiality: FileConfidentiality;
+  updatedAt: string;
+  recordCount: number;
+  checksum: string;
+  tags: string[];
+}
+
+export interface MasterFolderInfo {
+  id: MasterFolderId;
+  name: string;
+  shortLabel: string;
+  description: string;
+  securityLevel: string;
+  encryption: string;
+  colorTheme: string;
+  itemCount: number;
+  totalSize: string;
+  isUrgent?: boolean;
+}
+
+export interface AuditExportLog {
+  id: string;
+  timestamp: string;
+  fileName: string;
+  folderId: MasterFolderId;
+  format: ExportFormat;
+  authenticatedGoogleEmail: string;
+  authMethod: 'Google SSO (GIS Verified)' | 'Google One-Tap' | 'Google OAuth Bearer';
+  status: 'Approved' | 'Blocked' | 'Security Check Failed';
+  ipAddress: string;
+  deviceInfo: string;
 }
 

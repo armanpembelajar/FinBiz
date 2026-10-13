@@ -13,16 +13,28 @@ import { PelaksanaanView } from './components/views/PelaksanaanView';
 import { PelaporanView } from './components/views/PelaporanView';
 import { PengaturanView } from './components/views/PengaturanView';
 import { AkunView } from './components/views/AkunView';
+import { MasterDataView } from './components/views/MasterDataView';
 import { AuthModal } from './components/auth/AuthModal';
 import { Landing3DView } from './components/auth/Landing3DView';
 import { TransactionModal } from './components/modals/TransactionModal';
 import { ThreeInteractiveBackground } from './components/common/ThreeInteractiveBackground';
-import { CheckCircle2, LogOut } from 'lucide-react';
+import { 
+  CheckCircle2, 
+  LogOut, 
+  Menu, 
+  Layers, 
+  LayoutDashboard, 
+  ReceiptText, 
+  CalendarClock, 
+  UserCheck,
+  FolderLock
+} from 'lucide-react';
 import { supabase } from './lib/supabase';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('Oktober 2026');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   // Master Kontrol Penuh Atas Semua Fitur (Feature Flags State)
   const [featureControls, setFeatureControls] = useState<FeatureControls>(defaultFeatureControls);
@@ -69,6 +81,8 @@ export default function App() {
       setActiveTab('dashboard');
     } else if (activeTab === 'pelaporan' && !featureControls.enablePelaporan) {
       setActiveTab('dashboard');
+    } else if (activeTab === 'masterdata' && !featureControls.enableMasterData) {
+      setActiveTab('dashboard');
     }
   }, [activeTab, featureControls]);
 
@@ -104,6 +118,8 @@ export default function App() {
     roleTitle: '',
     nik: '',
     avatarUrl: '',
+    enableAuthenticator: false,
+    enableFingerprint: false,
   });
 
   // Data transaksi & pagu anggaran
@@ -285,7 +301,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Sidebar Navigasi FinBiz */}
+      {/* Sidebar Navigasi FinBiz (Desktop Sticky & Mobile Drawer) */}
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -293,12 +309,53 @@ export default function App() {
         onOpenAuthModal={handleOpenAuthModal}
         featureControls={featureControls}
         onLogout={handleLogout}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Main Layout Area - Tanpa Header (Semua Layar Menggunakan Banner Langsung) */}
+      {/* Main Layout Area */}
       <div className="relative z-10 flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
-        {/* Viewport Konten Utama */}
-        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+        {/* Mobile Top Header Bar: Responsif di Smartphone / HP */}
+        <header className="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 py-2.5 flex items-center justify-between text-white md:hidden shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-colors cursor-pointer"
+              aria-label="Buka menu navigasi"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-md bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400">
+                <Layers className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-bold text-sm tracking-tight text-white">FinBiz</span>
+            </div>
+          </div>
+
+          {/* Badge Tab Aktif & Avatar Akun Cepat */}
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[10px] font-bold uppercase tracking-wider">
+              {activeTab}
+            </span>
+            <button
+              type="button"
+              onClick={() => setActiveTab('akun')}
+              className="w-7 h-7 rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center bg-teal-500/20 text-teal-300 cursor-pointer"
+              title="Profil Pengguna"
+            >
+              {userProfile.avatarUrl ? (
+                <img src={userProfile.avatarUrl} alt={userProfile.name} className="w-full h-full object-cover" />
+              ) : (
+                <UserCheck className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
+        </header>
+
+        {/* Viewport Konten Utama: Responsif HP / Tablet / Desktop */}
+        <main className="flex-1 p-3.5 sm:p-5 md:p-8 max-w-7xl w-full mx-auto space-y-4 sm:space-y-6 pb-24 md:pb-8">
           {activeTab === 'dashboard' && (
             <DashboardView
               userProfile={userProfile}
@@ -335,6 +392,18 @@ export default function App() {
               transactions={transactions}
               selectedPeriod={selectedPeriod}
               featureControls={featureControls}
+              onUpdateProfile={handleUpdateProfile}
+            />
+          )}
+
+          {activeTab === 'masterdata' && (
+            <MasterDataView
+              userProfile={userProfile}
+              featureControls={featureControls}
+              transactions={transactions}
+              budgetItems={budgetItems}
+              onUpdateProfile={handleUpdateProfile}
+              onOpenAuthModal={handleOpenAuthModal}
             />
           )}
 
@@ -360,6 +429,74 @@ export default function App() {
             />
           )}
         </main>
+
+        {/* Mobile Bottom Navigation Bar: Akses Cepat 1 Jempol di Smartphone */}
+        <nav className="fixed bottom-0 left-0 right-0 z-30 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 flex items-center justify-around py-1.5 px-2 md:hidden shadow-2xl">
+          <button
+            type="button"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              activeTab === 'dashboard'
+                ? 'text-teal-400 bg-teal-500/15 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span className="text-[10px]">Beranda</span>
+          </button>
+
+          {featureControls.enablePelaksanaan && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('pelaksanaan')}
+              className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'pelaksanaan'
+                  ? 'text-teal-400 bg-teal-500/15 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <ReceiptText className="w-4 h-4" />
+              <span className="text-[10px]">Kas</span>
+            </button>
+          )}
+
+          {featureControls.enablePerencanaan && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('perencanaan')}
+              className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'perencanaan'
+                  ? 'text-teal-400 bg-teal-500/15 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <CalendarClock className="w-4 h-4" />
+              <span className="text-[10px]">RAB</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('akun')}
+            className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              activeTab === 'akun'
+                ? 'text-teal-400 bg-teal-500/15 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <UserCheck className="w-4 h-4" />
+            <span className="text-[10px]">Akun</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
+          >
+            <Menu className="w-4 h-4" />
+            <span className="text-[10px]">Menu</span>
+          </button>
+        </nav>
       </div>
 
       {/* Dua Jendela Login & Penyettingan Profil Modal */}

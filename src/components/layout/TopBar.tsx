@@ -35,6 +35,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     perencanaan: { title: 'Perencanaan', category: 'RAB & Target Omzet' },
     pelaksanaan: { title: 'Pelaksanaan', category: 'Buku Kas & Transaksi' },
     pelaporan: { title: 'Pelaporan', category: 'Laba Rugi & Neraca' },
+    masterdata: { title: 'Master Data', category: 'Vault & Repositori Berkas Sensitif' },
     pengaturan: { title: 'Pengaturan', category: 'Kontrol & Sistem' },
     akun: { title: 'Akun', category: 'Profil & Usaha' },
   };
